@@ -1,0 +1,2 @@
+models/ner_baseline/model-best/vocab/vectors filter=lfs diff=lfs merge=lfs -text
+models/ner_baseline/model-last/vocab/vectors filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,21 @@
+{
+  "training_duration_seconds": 964.9,
+  "training_duration_minutes": 16.1,
+  "train_data": "C:\\Users\\lilyrose\\-Al-Powered-Contract-Intelligence-Risk-Scoring-NLP-\\data\\processed\\cuad_ner_train.spacy",
+  "dev_data": "C:\\Users\\lilyrose\\-Al-Powered-Contract-Intelligence-Risk-Scoring-NLP-\\data\\processed\\cuad_ner_dev.spacy",
+  "model_best": "C:\\Users\\lilyrose\\-Al-Powered-Contract-Intelligence-Risk-Scoring-NLP-\\models\\ner_baseline\\model-best",
+  "model_last": "C:\\Users\\lilyrose\\-Al-Powered-Contract-Intelligence-Risk-Scoring-NLP-\\models\\ner_baseline\\model-last",
+  "phase": "1",
+  "model_type": "spaCy tok2vec + NER",
+  "base_model": "en_core_web_lg",
+  "dev_ents_f": 0.4675324675,
+  "dev_ents_p": 0.6,
+  "dev_ents_r": 0.3829787234,
+  "per_label_f1": {
+    "DATE": 0.3157894737,
+    "ORG": 0.4651162791,
+    "LAW_JURISDICTION": 0.0,
+    "CLAUSE": 0.7692307692,
+    "DURATION": 0.0
+  }
+}
