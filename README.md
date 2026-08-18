@@ -76,7 +76,7 @@ python -m pytest tests/ -v
 
 | Phase | Week | Focus | Status |
 |---|---|---|---|
-| **1 (current)** | 1 | CUAD processing · OCR pipeline · spaCy NER baseline | ⏳ 90% done |
+| **1 (current)** | 1 | CUAD processing · OCR pipeline · spaCy NER baseline | ✅completed |
 | 2 | 2 | RoBERTa-legal fine-tuning · clause classification | ⬜ Not started |
 | 3 | 3 | Vector search (Pinecone/Milvus) · FastAPI + Celery | ⬜ Not started |
 | 4 | 4 | Docker · AWS EC2 · Frontend highlights UI | ⬜ Not started |
