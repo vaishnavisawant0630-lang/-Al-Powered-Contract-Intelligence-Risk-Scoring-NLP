@@ -21,11 +21,11 @@
 
 | # | Task | Files | Status |
 |---|---|---|---|
-| 1 | **CUAD Dataset Processing** | `cuad_loader.py`, `span_validator.py`, `cuad_to_ner.py`, `cuad_to_classification.py`, `dataset_stats.py` | ✅ Complete |
-| 2 | **OCR & Ingestion Pipeline** | `pdf_extractor.py`, `ocr_extractor.py`, `docx_extractor.py`, `document_router.py`, `text_cleaner.py` | ✅ Complete |
+| 1 | **CUAD Dataset Processing** | `cuad_loader.py`, `span_validator.py`, `cuad_to_ner.py`, `cuad_to_classification.py`, `dataset_stats.py` | ✅ Completed |
+| 2 | **OCR & Ingestion Pipeline** | `pdf_extractor.py`, `ocr_extractor.py`, `docx_extractor.py`, `document_router.py`, `text_cleaner.py` | ✅ Completed |
 | 3 | **spaCy NER Baseline** | `base_config.cfg`, `train.py`, `evaluate.py`, `inference.py` | ✅ Complete |
 | 4 | **Test Suite** | `test_pdf_extractor.py`, `test_ocr_extractor.py`, `test_cuad_to_ner.py`, `test_ner_inference.py` | ✅ 65 passed / 12 skipped / 0 failed |
-| 5 | **Model Training** | `models/ner_baseline/model-best/` |Completed|
+| 5 | **Model Training** | `models/ner_baseline/model-best/` |✅Completed|
 
 ### What Has Been Delivered
 
