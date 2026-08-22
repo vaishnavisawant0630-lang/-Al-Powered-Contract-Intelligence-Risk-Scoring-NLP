@@ -23,6 +23,6 @@ Processed Contract Dataset
           │
           ▼
  Accuracy / Precision / Recall / F1
-<img width="627" height="178" alt="Screenshot 2026-08-22 174436" src="https://github.com/user-attachments/assets/28aedabf-f9a3-488c-9852-5f9d273a8971" />
+<img width="627" height="178" alt="Screenshot 2026-08-22 174436" src="https://github.com/user-attachments/assets/41d37f6a-3cd5-464d-8b2e-d006423a2f19" />
+<img width="627" height="178" alt="Screenshot 2026-08-22 174436" src="https://github.com/user-attachments/assets/fe500096-4a88-4b36-8af1-14f030088292" />
 
- <img width="1674" height="912" alt="Screenshot 2026-08-22 174410" src="https://github.com/user-attachments/assets/36bea9b5-810f-4e10-95c6-cdb6519b1a97" />
