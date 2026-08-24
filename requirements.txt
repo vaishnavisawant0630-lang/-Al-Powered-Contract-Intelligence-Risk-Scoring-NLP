@@ -1,0 +1,73 @@
+# ============================================================
+# AI-Powered Contract Intelligence & Risk Scoring Platform
+# requirements.txt — Production dependencies (pinned versions)
+# ============================================================
+#
+# INSTALLATION
+# ------------
+#   pip install -r requirements.txt
+#
+# GROUPS (by subsystem)
+# ----------------------
+# [Core]           Python tooling
+# [NLP / NER]      spaCy + model
+# [Dataset]        HuggingFace CUAD loading
+# [Ingestion]      PDF / OCR / DOCX extraction
+# [Image]          OCR preprocessing
+# [ML utils]       sklearn, tqdm
+# [Config / Log]   pydantic-settings, structlog, python-dotenv
+#
+# NOTE: pin minor versions (e.g., spacy>=3.7,<3.8) to prevent silent
+# breaking changes in spaCy model serialisation format.
+
+# ------------------------------------------------------------------
+# [NLP / NER]
+# ------------------------------------------------------------------
+spacy>=3.7.0,<3.8.0
+# en_core_web_lg must be installed separately:
+#   python -m spacy download en_core_web_lg
+# It is NOT a pip package and cannot be pinned here.
+
+# ------------------------------------------------------------------
+# [Dataset]
+# ------------------------------------------------------------------
+datasets>=2.18.0,<3.0.0          # HuggingFace Datasets — CUAD loading
+huggingface-hub>=0.22.0,<1.0.0  # Auth + dataset download utilities
+
+# ------------------------------------------------------------------
+# [Ingestion — PDF digital]
+# ------------------------------------------------------------------
+pdfminer.six>=20221105           # Direct text extraction from digital PDFs
+
+# ------------------------------------------------------------------
+# [Ingestion — PDF OCR]
+# ------------------------------------------------------------------
+pdf2image>=1.17.0,<2.0.0        # Renders PDF pages to PIL Images via poppler
+pytesseract>=0.3.10,<1.0.0      # Python wrapper for Tesseract OCR binary
+# NOTE: Tesseract binary must be installed at OS level:
+#   Ubuntu: sudo apt-get install tesseract-ocr
+#   macOS:  brew install tesseract
+#   Windows: https://github.com/UB-Mannheim/tesseract/wiki
+
+# ------------------------------------------------------------------
+# [Ingestion — DOCX]
+# ------------------------------------------------------------------
+python-docx>=1.1.0,<2.0.0       # Microsoft Word .docx text extraction
+
+# ------------------------------------------------------------------
+# [Image preprocessing — OCR quality]
+# ------------------------------------------------------------------
+Pillow>=10.0.0,<11.0.0          # PIL image transforms for OCR preprocessing
+
+# ------------------------------------------------------------------
+# [ML utilities]
+# ------------------------------------------------------------------
+scikit-learn>=1.4.0,<2.0.0      # train_test_split, classification metrics
+tqdm>=4.66.0,<5.0.0             # Progress bars for data processing scripts
+
+# ------------------------------------------------------------------
+# [Config / Logging / Environment]
+# ------------------------------------------------------------------
+pydantic-settings>=2.2.0,<3.0.0  # Typed settings with env var validation
+structlog>=24.1.0,<25.0.0         # Structured JSON logging
+python-dotenv>=1.0.0,<2.0.0       # Load .env file into environment

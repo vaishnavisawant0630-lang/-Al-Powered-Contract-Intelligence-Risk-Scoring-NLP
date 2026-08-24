@@ -1,0 +1,88 @@
+# pyproject.toml
+# ===============
+# Tool configuration for ruff (lint), mypy (types), and pytest (tests).
+# Centralised here so each tool reads from one place.
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "contract-intelligence"
+version = "0.1.0"
+description = "AI-Powered Contract Intelligence & Risk Scoring Platform — Phase 1"
+requires-python = ">=3.11"
+readme = "README.md"
+
+# ------------------------------------------------------------------
+# Ruff — linter + formatter
+# ------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["core", "ingestion", "data_processing", "ner", "tests"]
+
+[tool.ruff.lint]
+# Rules enabled:
+#   E   — pycodestyle errors
+#   F   — pyflakes (unused imports, undefined names)
+#   I   — isort (import ordering)
+#   N   — pep8-naming
+#   UP  — pyupgrade (modern Python idioms)
+#   B   — flake8-bugbear (common bugs)
+#   ANN — flake8-annotations (type hint coverage)
+select = ["E", "F", "I", "N", "UP", "B", "ANN"]
+ignore = [
+    "ANN101",   # missing type for `self`
+    "ANN102",   # missing type for `cls`
+    "ANN201",   # missing return type for public functions (added incrementally)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["core", "ingestion", "data_processing", "ner"]
+
+# ------------------------------------------------------------------
+# Mypy — static type checker
+# ------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+strict = false                    # Start with false; tighten during Phase 2
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true     # Many ML libs lack full stubs
+# Modules to check (expand as stubs are added):
+files = ["core", "ingestion", "data_processing", "ner"]
+
+# ------------------------------------------------------------------
+# Pytest — test runner configuration
+# ------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",                         # verbose output
+    "--tb=short",                 # short traceback format
+    "--strict-markers",           # fail on unknown markers
+]
+markers = [
+    "unit: fast, isolated unit tests (no I/O, no network)",
+    "integration: tests requiring real binaries (Tesseract, poppler) or trained model",
+    "slow: tests that take > 5 seconds",
+]
+
+# ------------------------------------------------------------------
+# Coverage
+# ------------------------------------------------------------------
+[tool.coverage.run]
+source = ["core", "ingestion", "data_processing", "ner"]
+omit = [
+    "tests/*",
+    "scripts/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+fail_under = 80                   # CI fails if coverage drops below 80%
+show_missing = true
