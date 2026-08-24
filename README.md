@@ -25,7 +25,11 @@
 | 2 | **OCR & Ingestion Pipeline** | `pdf_extractor.py`, `ocr_extractor.py`, `docx_extractor.py`, `document_router.py`, `text_cleaner.py` | ✅ Completed |
 | 3 | **spaCy NER Baseline** | `base_config.cfg`, `train.py`, `evaluate.py`, `inference.py` | ✅ Complete |
 | 4 | **Test Suite** | `test_pdf_extractor.py`, `test_ocr_extractor.py`, `test_cuad_to_ner.py`, `test_ner_inference.py` | ✅ 65 passed / 12 skipped / 0 failed |
+YASH-KATHIRIYA
+| 5 | **Model Training** | `models/ner_baseline/model-best/` | ✅ Complete |
+=======
 | 5 | **Model Training** | `models/ner_baseline/model-best/` |In process|
+main
 
 ### What Has Been Delivered
 
