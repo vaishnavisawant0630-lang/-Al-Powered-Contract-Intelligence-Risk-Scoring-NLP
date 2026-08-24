@@ -4,7 +4,7 @@
 
 ---
 
-## 🚦 Current Status — Last Updated: 2026-08-09
+## 🚦 Current Status — Last Updated: 2026-08-18
 
 ### ⏳ Currently At: Model Training (Phase 1 · Step 5 of 5)
 
@@ -21,11 +21,15 @@
 
 | # | Task | Files | Status |
 |---|---|---|---|
-| 1 | **CUAD Dataset Processing** | `cuad_loader.py`, `span_validator.py`, `cuad_to_ner.py`, `cuad_to_classification.py`, `dataset_stats.py` | ✅ Complete |
-| 2 | **OCR & Ingestion Pipeline** | `pdf_extractor.py`, `ocr_extractor.py`, `docx_extractor.py`, `document_router.py`, `text_cleaner.py` | ✅ Complete |
+| 1 | **CUAD Dataset Processing** | `cuad_loader.py`, `span_validator.py`, `cuad_to_ner.py`, `cuad_to_classification.py`, `dataset_stats.py` | ✅ Completed |
+| 2 | **OCR & Ingestion Pipeline** | `pdf_extractor.py`, `ocr_extractor.py`, `docx_extractor.py`, `document_router.py`, `text_cleaner.py` | ✅ Completed |
 | 3 | **spaCy NER Baseline** | `base_config.cfg`, `train.py`, `evaluate.py`, `inference.py` | ✅ Complete |
 | 4 | **Test Suite** | `test_pdf_extractor.py`, `test_ocr_extractor.py`, `test_cuad_to_ner.py`, `test_ner_inference.py` | ✅ 65 passed / 12 skipped / 0 failed |
+YASH-KATHIRIYA
 | 5 | **Model Training** | `models/ner_baseline/model-best/` | ✅ Complete |
+=======
+| 5 | **Model Training** | `models/ner_baseline/model-best/` |In process|
+main
 
 ### What Has Been Delivered
 
@@ -76,7 +80,7 @@ python -m pytest tests/ -v
 
 | Phase | Week | Focus | Status |
 |---|---|---|---|
-| **1 (current)** | 1 | CUAD processing · OCR pipeline · spaCy NER baseline | ⏳ 90% done |
+| **1 (current)** | 1 | CUAD processing · OCR pipeline · spaCy NER baseline | ✅completed |
 | 2 | 2 | RoBERTa-legal fine-tuning · clause classification | ⬜ Not started |
 | 3 | 3 | Vector search (Pinecone/Milvus) · FastAPI + Celery | ⬜ Not started |
 | 4 | 4 | Docker · AWS EC2 · Frontend highlights UI | ⬜ Not started |
