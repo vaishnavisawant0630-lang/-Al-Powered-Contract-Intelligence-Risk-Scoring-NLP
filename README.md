@@ -1,97 +1,306 @@
+MODEL TRANING & FINE TUNING - MEMBER 5
 
-# AI-Powered Contract Intelligence & Risk Scoring
+Fine-Tuning – Clause Classification
 
-> **Phase 1**: Data Parsing & Baseline Modeling
->
-> **Phase 2**: Legal NLP, Clause Classification & Risk Scoring
+Overview
 
----
+AI-Powered Contract Intelligence & Risk Scoring
 
-## 🚦 Current Status — Last Updated: 2026-08-24
+Phase 1: Data Parsing & Baseline Modeling
 
-### ✅ Currently At: Phase 1 Completed
+Phase 2: Legal NLP, Clause Classification & Risk Scoring
 
-> **Phase 1 — Data Parsing & Baseline Modeling is fully completed.**
->
-> CUAD dataset processing, OCR and document ingestion, spaCy NER baseline, model training, evaluation, and testing have been completed.
->
-> **Next Step → Start Phase 2: Legal NLP, Clause Classification & Risk Scoring**
+This folder contains the fine-tuned Transformer model used for legal contract clause classification in the AI-Powered Contract Intelligence & Risk Scoring project.
 
----
+The model is trained on the processed CUAD-based clause dataset and is designed to classify extracted contract clauses into predefined legal clause categories.
 
-## ✅ Progress Tracker
+The fine-tuning pipeline uses:
 
-### Phase 1 — Data Parsing & Baseline Modeling
+Python
 
-| # | Task | Files | Status |
-|---|---|---|---|
-| 1 | **CUAD Dataset Processing** | `cuad_loader.py`, `span_validator.py`, `cuad_to_ner.py`, `cuad_to_classification.py`, `dataset_stats.py` | ✅ Completed |
-| 2 | **OCR & Ingestion Pipeline** | `pdf_extractor.py`, `ocr_extractor.py`, `docx_extractor.py`, `document_router.py`, `text_cleaner.py` | ✅ Completed |
-| 3 | **spaCy NER Baseline** | `base_config.cfg`, `train.py`, `evaluate.py`, `inference.py` | ✅ Completed |
-| 4 | **Test Suite** | `test_pdf_extractor.py`, `test_ocr_extractor.py`, `test_cuad_to_ner.py`, `test_ner_inference.py` | ✅ 65 passed / 12 skipped / 0 failed |
-| 5 | **Model Training** | `models/ner_baseline/model-best/` | ✅ Completed |
+Hugging Face Transformers
 
----
+PyTorch
 
-## 📦 What Has Been Delivered — Phase 1
+RoBERTa
 
-- **23,063 KB** of training data → `data/processed/cuad_ner_train.spacy`
-- **4,147 KB** of development data → `data/processed/cuad_ner_dev.spacy`
-- **510 CUAD contracts** processed
-- **41 CUAD clause types** mapped to **7 NER labels**
-- Full ingestion pipeline:
-  - Digital PDF extraction
-  - Scanned PDF OCR
-  - DOCX extraction
-  - TXT processing
-- Automatic document routing
-- Text cleaning and normalization
-- Span validation and conflict resolution
-- spaCy NER configuration
-- NER model training
-- NER evaluation and inference
-- Trained model saved at:
-  `models/ner_baseline/model-best/`
-- **65 unit + integration tests passing**
-- **12 tests skipped**
-- **0 tests failed**
+Hugging Face Datasets
 
----
+Scikit-learn
 
-## 🧠 Phase 1 NER Labels
+Pandas
 
-| Label | Description |
-|---|---|
-| `ORG` | Contract parties / organizations |
-| `DATE` | Contract-related dates |
-| `MONEY` | Monetary amounts |
-| `LAW_JURISDICTION` | Governing law / jurisdiction |
-| `DURATION` | Contract duration / notice periods |
-| `IP_CLAUSE` | Intellectual property related information |
-| Other mapped legal entities | Additional legal contract information |
+NumPy
 
----
+🚦 Current Status — Last Updated: 2026-08-24
 
-## ⚙️ Phase 1 Key Design Decisions
+✅ Currently At: Phase 1 Completed
 
-- **All 41 CUAD clause types** mapped to 7 NER labels
-- **70% / 15% / 15%** train/validation/test split
-- Automatic scanned-PDF detection
-- PDF text extraction first, OCR fallback when required
-- Span conflict resolution keeps the longer valid span
-- Structured logging for discarded/conflicting spans
-- No overlapping entities
-- `en_core_web_lg` used for spaCy warm-start
-- CPU-compatible training
-- GPU support available
-- Protocol interfaces used for loose coupling
-- Shared types and configuration handled through `core/`
+Phase 1 — Data Parsing & Baseline Modeling is fully completed.
 
----
+CUAD dataset processing, OCR and document ingestion, spaCy NER baseline, model training, evaluation, and testing have been completed.
 
-## 🧪 Phase 1 Testing
+Next Step → Start Phase 2: Legal NLP, Clause Classification & Risk Scoring
 
-```bash
+Folder Structure
+
+Fine-Tuning/
+│
+├── train.py
+├── evaluate_metrics.py
+├── README.md
+│
+└── clause_classifier/
+    ├── config.json
+    ├── tokenizer.json
+    ├── tokenizer_config.json
+    ├── special_tokens_map.json
+    ├── vocab.json
+    └── merges.txt
+
+Note: The trained model.safetensors file may be stored separately because of GitHub file-size/storage considerations.
+
+1. Model Training
+
+Purpose
+
+The training pipeline fine-tunes a pretrained Transformer model for legal clause classification.
+
+The model learns to map contract clause text to the appropriate clause category.
+
+Training Flow
+
+CUAD / Processed Dataset
+          ↓
+Data Cleaning
+          ↓
+Train / Validation Split
+          ↓
+Tokenization
+          ↓
+RoBERTa Fine-Tuning
+          ↓
+Validation
+          ↓
+Trained Clause Classifier
+
+Dataset
+
+The project uses a processed clause dataset derived from the CUAD (Contract Understanding Atticus Dataset).
+
+Expected dataset location:
+
+data/processed/clause_dataset.csv
+
+The dataset should contain at least:
+
+text
+label_id
+
+where:
+
+text = contract clause text
+
+label_id = numerical clause category
+
+Model
+
+The baseline Transformer model used for fine-tuning is:
+
+roberta-base
+
+The model is trained as a sequence-classification model.
+
+Example Configuration
+
+Maximum sequence length : 512
+Batch size              : 8
+Epochs                  : 2
+Learning rate           : 2e-5
+
+These values can be modified in the training script depending on available hardware and dataset size.
+
+2. Training the Model
+
+Run the training script from the project root:
+
+python train.py
+
+The training pipeline performs the following operations:
+
+Loads the processed clause dataset.
+
+Detects the text and label columns.
+
+Splits the dataset into training and validation sets.
+
+Converts the data into a Hugging Face Dataset.
+
+Tokenizes clause text using the RoBERTa tokenizer.
+
+Fine-tunes the Transformer model.
+
+Evaluates the model on the validation dataset.
+
+Saves the trained model and tokenizer.
+
+The trained model is saved to:
+
+models/clause_classifier/
+
+or the output directory configured in the training script.
+
+#
+
+Task
+
+Files
+
+Status
+
+1
+
+CUAD Dataset Processing
+
+cuad_loader.py, span_validator.py, cuad_to_ner.py, cuad_to_classification.py, dataset_stats.py
+
+✅ Completed
+
+2
+
+OCR & Ingestion Pipeline
+
+pdf_extractor.py, ocr_extractor.py, docx_extractor.py, document_router.py, text_cleaner.py
+
+✅ Completed
+
+3
+
+spaCy NER Baseline
+
+base_config.cfg, train.py, evaluate.py, inference.py
+
+✅ Completed
+
+4
+
+Test Suite
+
+test_pdf_extractor.py, test_ocr_extractor.py, test_cuad_to_ner.py, test_ner_inference.py
+
+✅ 65 passed / 12 skipped / 0 failed
+
+5
+
+Model Training
+
+models/ner_baseline/model-best/
+
+✅ Completed
+
+📦 What Has Been Delivered — Phase 1
+
+23,063 KB of training data → data/processed/cuad_ner_train.spacy
+
+4,147 KB of development data → data/processed/cuad_ner_dev.spacy
+
+510 CUAD contracts processed
+
+41 CUAD clause types mapped to 7 NER labels
+
+Full ingestion pipeline:
+
+Digital PDF extraction
+
+Scanned PDF OCR
+
+DOCX extraction
+
+TXT processing
+
+Automatic document routing
+
+Text cleaning and normalization
+
+Span validation and conflict resolution
+
+spaCy NER configuration
+
+NER model training
+
+NER evaluation and inference
+
+Trained model saved at:
+models/ner_baseline/model-best/
+
+65 unit + integration tests passing
+
+12 tests skipped
+
+0 tests failed
+
+🧠 Phase 1 NER Labels
+
+Label
+
+Description
+
+ORG
+
+Contract parties / organizations
+
+DATE
+
+Contract-related dates
+
+MONEY
+
+Monetary amounts
+
+LAW_JURISDICTION
+
+Governing law / jurisdiction
+
+DURATION
+
+Contract duration / notice periods
+
+IP_CLAUSE
+
+Intellectual property related information
+
+Other mapped legal entities
+
+Additional legal contract information
+
+⚙️ Phase 1 Key Design Decisions
+
+All 41 CUAD clause types mapped to 7 NER labels
+
+70% / 15% / 15% train/validation/test split
+
+Automatic scanned-PDF detection
+
+PDF text extraction first, OCR fallback when required
+
+Span conflict resolution keeps the longer valid span
+
+Structured logging for discarded/conflicting spans
+
+No overlapping entities
+
+en_core_web_lg used for spaCy warm-start
+
+CPU-compatible training
+
+GPU support available
+
+Protocol interfaces used for loose coupling
+
+Shared types and configuration handled through core/
+
+🧪 Phase 1 Testing
+
 pytest tests/ -v
 Current Result
 65 passed
@@ -373,7 +582,6 @@ MODEL_PATH=models/ner_baseline/model-best
 
 CLASSIFIER_MODEL_PATH=models/legal_classifier
 
-
 Security: Never commit .env, API keys, passwords, database credentials, or other secrets to GitHub.
 
 💻 System Requirements
@@ -392,53 +600,335 @@ cd contract-intelligence
 # 2. Create virtual environment
 python -m venv .venv
 
-# 3. Activate on Windows
+# 3. Model Files
+
+A trained Transformer model normally contains files such as:
+
+```text
+clause_classifier/
+│
+├── config.json
+├── model.safetensors
+├── tokenizer.json
+├── tokenizer_config.json
+├── special_tokens_map.json
+├── vocab.json
+└── merges.txt
+
+Important Files
+
+File
+
+Purpose
+
+model.safetensors
+
+Contains the trained model weights
+
+config.json
+
+Model architecture and configuration
+
+tokenizer.json
+
+Tokenizer configuration and vocabulary information
+
+tokenizer_config.json
+
+Tokenizer settings
+
+special_tokens_map.json
+
+Special-token configuration
+
+vocab.json
+
+RoBERTa vocabulary
+
+merges.txt
+
+RoBERTa BPE merge rules
+
+The tokenizer files should be kept together with the model configuration. The trained model.safetensors file is required to run the trained classifier.
+
+4. Model Evaluation
+
+Purpose
+
+The evaluation pipeline measures the performance of the trained clause classifier on validation/test data.
+
+Run:
+
+python evaluate_metrics.py
+
+The evaluation script loads:
+
+data/processed/clause_dataset.csv
+
+and the trained model from:
+
+models/clause_classifier/
+
+Evaluation Metrics
+
+The following metrics are calculated:
+
+Accuracy
+
+Measures the percentage of correctly classified clauses.
+
+Accuracy = Correct Predictions / Total Predictions
+
+Precision
+
+Measures how many predicted instances of a class are actually correct.
+
+Precision = TP / (TP + FP)
+
+Recall
+
+Measures how many actual instances of a class were correctly identified.
+
+Recall = TP / (TP + FN)
+
+F1-Score
+
+The F1-score combines precision and recall.
+
+F1 = 2 × (Precision × Recall) / (Precision + Recall)
+
+3. Activate on Windows
+
 .venv\Scripts\activate
 
-# 4. Install dependencies
+4. Install dependencies
+
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 
-# 5. Configure environment
+5. Configure environment
+
 copy .env.example .env
 
-# 6. Install spaCy base model
+6. Install spaCy base model
+
 python -m spacy download en_core_web_lg
 
-# 7. Process CUAD data
+7. Process CUAD data
+
 python -m data_processing.cuad_loader
 
-# 8. Train NER model
+8. Train NER model
+
 python -m ner.train
 
-# 9. Evaluate NER model
+9. Evaluate NER model
+
 python -m ner.evaluate --model models/ner_baseline/model-best
 
-# 10. Run tests
+10. Run tests
+
 pytest tests/ -v
 🚀 Quick Start — Phase 2
-# 1. Prepare classification dataset
+
+1. Prepare classification dataset
+
 python -m data_processing.cuad_to_classification
 
-# 2. Create 70/15/15 dataset split
+2. Create 70/15/15 dataset split
+
 python -m data_processing.dataset_split
 
-# 3. Train legal classification model
+5. Classification Report
+
+The evaluation pipeline generates a classification report containing:
+
+precision
+recall
+f1-score
+support
+
+for each clause category.
+
+Example:
+
+              precision    recall    f1-score    support
+
+Class 0          0.XX       0.XX       0.XX        XXX
+Class 1          0.XX       0.XX       0.XX        XXX
+Class 2          0.XX       0.XX       0.XX        XXX
+
+accuracy                              0.XX        XXX
+macro avg         0.XX       0.XX       0.XX        XXX
+weighted avg      0.XX       0.XX       0.XX        XXX
+
+The actual values depend on the trained model and evaluation dataset.
+
+3. Train legal classification model
+
 python -m classification.train_classifier
 
-# 4. Evaluate classifier
+4. Evaluate classifier
+
 python -m classification.evaluate
 
-# 5. Run error analysis
+5. Run error analysis
+
 python -m classification.error_analysis
 
-# 6. Run risk detection
+< SUJALJETHWA10
+
+6. Evaluation Output
+
+Evaluation results are stored in the metrics directory.
+
+metrics/
+├── metrics.json
+└── classification_report.txt
+
+metrics.json
+
+Stores numerical evaluation results in JSON format.
+
+Example:
+
+{
+    "accuracy": 0.00,
+    "precision": 0.00,
+    "recall": 0.00,
+    "f1_score": 0.00
+}
+
+classification_report.txt
+
+Contains the detailed classification report for each clause category.
+
+7. Running the Complete Fine-Tuning Pipeline
+
+From the project root:
+
+Step 1 – Train
+
+python train.py
+
+Step 2 – Evaluate
+
+python evaluate_metrics.py
+
+Step 3 – Check Results
+
+metrics/metrics.json
+metrics/classification_report.txt
+
+8. Requirements
+
+Install the required dependencies:
+
+pip install torch
+pip install transformers
+pip install datasets
+pip install pandas
+pip install numpy
+pip install scikit-learn
+
+Or install the project's requirements file:
+
+pip install -r requirements.txt
+
+9. Using the Trained Model
+
+Once the trained model and tokenizer are available:
+
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+MODEL_PATH = "models/clause_classifier"
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    MODEL_PATH
+)
+
+A clause can then be tokenized and passed to the classifier for prediction.
+
+text = "The agreement shall remain effective for a period of two years."
+
+inputs = tokenizer(
+    text,
+    return_tensors="pt",
+    truncation=True,
+    padding=True,
+    max_length=512
+)
+
+outputs = model(**inputs)
+
+prediction = outputs.logits.argmax(dim=-1).item()
+
+print("Predicted class:", prediction)
+
+10. Important Notes
+
+The tokenizer used during inference should match the tokenizer used during training.
+
+The trained model.safetensors file is required for actual model inference.
+
+The model should be loaded from the same model directory structure used during training.
+
+Keep the label-to-class mapping consistent between training and inference.
+
+Do not commit API keys, passwords, .env files, or other secrets.
+
+If the trained model is too large for normal GitHub storage, keep the model weights in dedicated model storage or use Git LFS.
+
+11. Project Role
+
+This fine-tuning component is responsible for:
+
+Contract Text
+      ↓
+Clause Classification
+      ↓
+Clause Category
+      ↓
+Risk Scoring Pipeline
+
+The predicted clause category can subsequently be used by the project's risk scoring and downstream NLP pipeline.
+
+Summary
+
+The Fine-Tuning module provides the Transformer-based clause classification component of the project.
+
+It supports:
+
+CUAD-based clause classification
+
+RoBERTa fine-tuning
+
+Automated tokenization
+
+Model evaluation
+
+Accuracy measurement
+
+Precision/Recall/F1 evaluation
+
+Classification reports
+
+Saved model and tokenizer artifacts
+
+This module forms the NLP classification layer of the AI-Powered Contract Intelligence & Risk Scoring system.
+
+6. Run risk detection
+
 python -m risk.risk_detector
 
-# 7. Calculate risk score
+7. Calculate risk score
+
 python -m risk.risk_scoring
 
-# 8. Run complete test suite
+8. Run complete test suite
+
 pytest tests/ -v
 🧪 Testing Strategy
 Phase 1
@@ -454,13 +944,13 @@ Phase 2
 Testing will cover:
 
 Dataset
-   ↓
+↓
 Tokenizer
-   ↓
+↓
 Classification
-   ↓
+↓
 Risk Detection
-   ↓
+↓
 Risk Scoring
 📊 Overall Project Status
 Phase	Completion	Status
@@ -468,61 +958,61 @@ Phase 1 — Data Parsing & Baseline Modeling	100%	✅ Completed
 Phase 2 — Legal NLP & Risk Scoring	0%	⬜ Not Started
 📌 Current Next Step
 ✅ PHASE 1 COMPLETED
-        │
-        ▼
+│
+▼
 🚀 START PHASE 2
-        │
-        ├── Prepare classification dataset
-        ├── Create 70/15/15 split
-        ├── Setup RoBERTa / Legal-BERT
-        ├── Fine-tune model
-        ├── Build clause classifier
-        ├── Build risk detector
-        ├── Implement risk scoring
-        ├── Evaluate model
-        └── Run tests
+│
+├── Prepare classification dataset
+├── Create 70/15/15 split
+├── Setup RoBERTa / Legal-BERT
+├── Fine-tune model
+├── Build clause classifier
+├── Build risk detector
+├── Implement risk scoring
+├── Evaluate model
+└── Run tests
 🎯 Phase 1 + Phase 2 Final Goal
-                    CONTRACT
-                       │
-                       ▼
-              Document Ingestion
-                       │
-              ┌────────┴────────┐
-              ▼                 ▼
-           PDF/DOCX            OCR
-              │                 │
-              └────────┬────────┘
-                       ▼
-                 Clean Text
-                       │
-                       ▼
-                  PHASE 1
-                       │
-                       ▼
-                  NER MODEL
-                       │
-          ┌────────────┼────────────┐
-          ▼            ▼            ▼
-         ORG         DATE         MONEY
-          │            │            │
-          └────────────┼────────────┘
-                       ▼
-                  PHASE 2
-                       │
-                       ▼
-             Legal Transformer
-                       │
-                       ▼
-             Clause Classification
-                       │
-                       ▼
-                Risk Detection
-                       │
-                       ▼
-                Risk Scoring
-                       │
-                       ▼
-             Contract Risk Report
+CONTRACT
+│
+▼
+Document Ingestion
+│
+┌────────┴────────┐
+▼                 ▼
+PDF/DOCX            OCR
+│                 │
+└────────┬────────┘
+▼
+Clean Text
+│
+▼
+PHASE 1
+│
+▼
+NER MODEL
+│
+┌────────────┼────────────┐
+▼            ▼            ▼
+ORG         DATE         MONEY
+│            │            │
+└────────────┼────────────┘
+▼
+PHASE 2
+│
+▼
+Legal Transformer
+│
+▼
+Clause Classification
+│
+▼
+Risk Detection
+│
+▼
+Risk Scoring
+│
+▼
+Contract Risk Report
 
 Current Milestone: Phase 1 — ✅ Completed
 
