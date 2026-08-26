@@ -1,0 +1,75 @@
+version: "3.9"
+
+# docker-compose.yml
+# ==================
+# Phase 1: No external services (no DB, no Redis, no API server yet).
+# This file is scaffolded for Phase 3 which adds:
+#   - redis (task queue for Celery async inference)
+#   - api (FastAPI server)
+#   - worker (Celery worker)
+#
+# CURRENT USE (Phase 1)
+# ----------------------
+# Build the base image to verify Docker setup works.
+# Run data preparation inside a container (optional but consistent).
+#
+# USAGE
+# -----
+#   # Build the image:
+#   docker-compose build
+#
+#   # Run data preparation:
+#   docker-compose run --rm base bash scripts/prepare_data.sh
+#
+#   # Train NER model:
+#   docker-compose run --rm base bash scripts/train_ner.sh
+
+services:
+
+  # ------------------------------------------------------------------
+  # base — Python + Tesseract + poppler base image
+  # Used for data processing and training in Phase 1.
+  # Will be extended as the api and worker base in Phase 3.
+  # ------------------------------------------------------------------
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Mount project root so code changes don't require rebuild
+      - .:/app
+      # Mount data directory (persists across container runs)
+      - ./data:/app/data
+      # Mount models directory (persists trained models)
+      - ./models:/app/models
+    environment:
+      # Read from .env file (must exist before running docker-compose)
+      - LOG_FORMAT=console
+      - LOG_LEVEL=INFO
+    env_file:
+      - .env
+
+# ------------------------------------------------------------------
+# Phase 3 scaffolds (commented out — uncomment when implementing)
+# ------------------------------------------------------------------
+
+  # redis:
+  #   image: redis:7.2-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+
+  # api:
+  #   build: .
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - redis
+  #   command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+
+  # worker:
+  #   build: .
+  #   depends_on:
+  #     - redis
+  #   command: celery -A api.tasks worker --loglevel=info

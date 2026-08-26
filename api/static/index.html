@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contract Intelligence & Risk Scoring</title>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --border: #e3e6ee;
+    --text: #1c1f2b;
+    --muted: #6b7180;
+    --accent: #4f5bd5;
+    --accent-dark: #3c46b0;
+    --low: #1a9c5a;
+    --low-bg: #e6f7ee;
+    --medium: #b5790a;
+    --medium-bg: #fdf3e2;
+    --high: #c8352f;
+    --high-bg: #fbe8e7;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header h1 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 700;
+  }
+  header .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  nav {
+    display: flex;
+    gap: 4px;
+  }
+  nav button {
+    border: none;
+    background: transparent;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  nav button.active {
+    background: var(--accent);
+    color: #fff;
+  }
+  main {
+    max-width: 960px;
+    margin: 28px auto;
+    padding: 0 20px 60px;
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card h2 { margin: 0 0 4px; font-size: 16px; }
+  .card .desc { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+
+  .dropzone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: #f4f5ff; }
+  .dropzone p { margin: 6px 0; color: var(--muted); font-size: 13px; }
+  .dropzone .fname { font-weight: 600; color: var(--text); font-size: 14px; }
+
+  button.primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+  button.primary:hover { background: var(--accent-dark); }
+  button.primary:disabled { background: #b6b9d6; cursor: not-allowed; }
+  button.secondary {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  input[type=text], select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+  }
+  label.field-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; display: block; }
+  .field { margin-bottom: 16px; }
+  .row { display: flex; gap: 16px; }
+  .row > .field { flex: 1; }
+
+  .status-line { display: flex; align-items: center; gap: 10px; margin-top: 18px; font-size: 14px; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+  }
+  .badge.status-pending, .badge.status-processing { background: #eef0fa; color: var(--accent); }
+  .badge.status-complete { background: var(--low-bg); color: var(--low); }
+  .badge.status-failed { background: var(--high-bg); color: var(--high); }
+  .badge.risk-LOW { background: var(--low-bg); color: var(--low); }
+  .badge.risk-MEDIUM { background: var(--medium-bg); color: var(--medium); }
+  .badge.risk-HIGH { background: var(--high-bg); color: var(--high); }
+
+  .risk-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+  }
+  .risk-banner.LOW { background: var(--low-bg); }
+  .risk-banner.MEDIUM { background: var(--medium-bg); }
+  .risk-banner.HIGH { background: var(--high-bg); }
+  .risk-banner .score { font-size: 28px; font-weight: 800; }
+  .risk-banner .label { font-size: 13px; color: var(--muted); }
+
+  .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); margin: 22px 0 10px; }
+
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: #f0f1f8;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip .l { font-weight: 700; color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover { background: #fafafe; }
+
+  .conf-bar-track { background: var(--border); border-radius: 6px; height: 6px; width: 100px; overflow: hidden; }
+  .conf-bar-fill { background: var(--accent); height: 100%; }
+
+  .empty { color: var(--muted); font-size: 13px; padding: 24px 0; text-align: center; }
+  .error-box { background: var(--high-bg); color: var(--high); padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-top: 14px; }
+
+  .back-link { font-size: 13px; color: var(--accent); cursor: pointer; font-weight: 600; margin-bottom: 14px; display: inline-block; }
+
+  .search-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .search-tabs button { flex: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Contract Intelligence &amp; Risk Scoring</h1>
+    <div class="sub">Upload, extract, classify, and search contracts</div>
+  </div>
+  <nav>
+    <button data-view="upload" class="active">Upload</button>
+    <button data-view="contracts">Contracts</button>
+    <button data-view="search">Search</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ UPLOAD VIEW ============ -->
+  <section id="view-upload" class="view active">
+    <div class="card">
+      <h2>Upload a contract</h2>
+      <div class="desc">PDF, DOCX, or TXT. Runs OCR (if scanned), entity extraction, clause classification, and risk scoring.</div>
+
+      <div class="dropzone" id="dropzone">
+        <p class="fname" id="dz-filename">Click to choose a file, or drag one here</p>
+        <p>.pdf · .docx · .txt</p>
+        <input type="file" id="file-input" accept=".pdf,.docx,.txt" style="display:none">
+      </div>
+
+      <button class="primary" id="upload-btn" disabled>Upload &amp; Analyze</button>
+
+      <div class="status-line" id="upload-status" style="display:none"></div>
+      <div class="error-box" id="upload-error" style="display:none"></div>
+    </div>
+
+    <div id="upload-results"></div>
+  </section>
+
+  <!-- ============ CONTRACTS VIEW ============ -->
+  <section id="view-contracts" class="view">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <h2 style="margin:0;">All contracts</h2>
+        <button class="secondary" id="refresh-contracts">Refresh</button>
+      </div>
+      <div class="desc">Click a row to view full results</div>
+      <div id="contracts-list"></div>
+    </div>
+  </section>
+
+  <!-- ============ SEARCH VIEW ============ -->
+  <section id="view-search" class="view">
+    <div class="card">
+      <div class="search-tabs">
+        <button class="secondary active" data-search="semantic">Semantic search</button>
+        <button class="secondary" data-search="clause">Clause search</button>
+      </div>
+
+      <div id="search-semantic">
+        <div class="field">
+          <label class="field-label">Search query</label>
+          <input type="text" id="semantic-query" placeholder="e.g. contracts with uncapped liability risk">
+        </div>
+        <button class="primary" id="semantic-btn">Search</button>
+      </div>
+
+      <div id="search-clause" style="display:none">
+        <div class="row">
+          <div class="field">
+            <label class="field-label">Clause type</label>
+            <select id="clause-type-select"></select>
+          </div>
+          <div class="field">
+            <label class="field-label">Min. confidence</label>
+            <select id="clause-min-conf">
+              <option value="0.3">0.3</option>
+              <option value="0.5" selected>0.5</option>
+              <option value="0.7">0.7</option>
+              <option value="0.9">0.9</option>
+            </select>
+          </div>
+        </div>
+        <button class="primary" id="clause-btn">Search</button>
+      </div>
+
+      <div id="search-results"></div>
+    </div>
+  </section>
+
+  <!-- ============ DETAIL VIEW (contract results, reached from Contracts / Search) ============ -->
+  <section id="view-detail" class="view">
+    <span class="back-link" id="detail-back">&larr; Back</span>
+    <div id="detail-content"></div>
+  </section>
+
+</main>
+
+<script>
+const API = "";
+
+/* ---------- view / tab switching ---------- */
+function showView(name) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + name).classList.add("active");
+  document.querySelectorAll("header nav button").forEach(b => b.classList.remove("active"));
+  const navBtn = document.querySelector(`header nav button[data-view="${name}"]`);
+  if (navBtn) navBtn.classList.add("active");
+}
+document.querySelectorAll("header nav button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    showView(btn.dataset.view);
+    if (btn.dataset.view === "contracts") loadContracts();
+  });
+});
+
+let detailReturnView = "contracts";
+function openDetail(contractId, returnView) {
+  detailReturnView = returnView || "contracts";
+  showView("detail");
+  renderDetail(contractId);
+}
+document.getElementById("detail-back").addEventListener("click", () => showView(detailReturnView));
+
+/* ---------- shared renderers ---------- */
+function riskBanner(score, level) {
+  if (level == null) return "";
+  return `
+    <div class="risk-banner ${level}">
+      <div>
+        <div class="score">${score != null ? score.toFixed(2) : "—"}</div>
+        <div class="label">Risk score</div>
+      </div>
+      <span class="badge risk-${level}">${level} RISK</span>
+    </div>`;
+}
+
+function entityChips(entities) {
+  if (!entities || entities.length === 0) return `<div class="empty">No entities extracted</div>`;
+  return `<div class="chip-group">` + entities.map(e =>
+    `<span class="chip"><span class="l">${e.label}</span>${escapeHtml(e.text)}</span>`
+  ).join("") + `</div>`;
+}
+
+function clauseTable(clauses) {
+  const present = (clauses || []).filter(c => c.present).sort((a, b) => b.confidence - a.confidence);
+  if (present.length === 0) return `<div class="empty">No clauses detected above threshold</div>`;
+  return `
+    <table>
+      <thead><tr><th>Clause type</th><th>Confidence</th></tr></thead>
+      <tbody>
+        ${present.map(c => `
+          <tr>
+            <td>${c.clause_type.replaceAll("_", " ")}</td>
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div class="conf-bar-track"><div class="conf-bar-fill" style="width:${Math.round(c.confidence*100)}%"></div></div>
+                <span>${(c.confidence*100).toFixed(0)}%</span>
+              </div>
+            </td>
+          </tr>`).join("")}
+      </tbody>
+    </table>`;
+}
+
+function resultsHtml(r) {
+  return `
+    ${riskBanner(r.risk_score, r.risk_level)}
+    <div class="section-title">Entities</div>
+    ${entityChips(r.entities)}
+    <div class="section-title">Clauses detected</div>
+    ${clauseTable(r.clauses)}
+  `;
+}
+
+function escapeHtml(s) {
+  return (s || "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function statusBadge(status) {
+  return `<span class="badge status-${status}">${status}</span>`;
+}
+
+/* ---------- UPLOAD ---------- */
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("file-input");
+const uploadBtn = document.getElementById("upload-btn");
+const dzFilename = document.getElementById("dz-filename");
+let selectedFile = null;
+
+dropzone.addEventListener("click", () => fileInput.click());
+dropzone.addEventListener("dragover", e => { e.preventDefault(); dropzone.classList.add("drag"); });
+dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag"));
+dropzone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropzone.classList.remove("drag");
+  if (e.dataTransfer.files.length) setFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener("change", () => { if (fileInput.files.length) setFile(fileInput.files[0]); });
+
+function setFile(file) {
+  selectedFile = file;
+  dzFilename.textContent = file.name;
+  uploadBtn.disabled = false;
+}
+
+uploadBtn.addEventListener("click", async () => {
+  if (!selectedFile) return;
+  uploadBtn.disabled = true;
+  document.getElementById("upload-error").style.display = "none";
+  document.getElementById("upload-results").innerHTML = "";
+
+  const statusLine = document.getElementById("upload-status");
+  statusLine.style.display = "flex";
+  statusLine.innerHTML = `<div class="spinner"></div> Uploading...`;
+
+  try {
+    const form = new FormData();
+    form.append("file", selectedFile);
+    const res = await fetch(`${API}/v1/contracts/upload`, { method: "POST", body: form });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    pollAndRenderUpload(data.id);
+  } catch (err) {
+    statusLine.style.display = "none";
+    showUploadError(err);
+    uploadBtn.disabled = false;
+  }
+});
+
+function showUploadError(err) {
+  const box = document.getElementById("upload-error");
+  box.style.display = "block";
+  box.textContent = "Upload failed: " + (err.message || err);
+}
+
+async function pollAndRenderUpload(contractId) {
+  const statusLine = document.getElementById("upload-status");
+  const poll = async () => {
+    const res = await fetch(`${API}/v1/contracts/${contractId}/status`);
+    const data = await res.json();
+    if (data.status === "pending" || data.status === "processing") {
+      statusLine.innerHTML = `<div class="spinner"></div> ${statusBadge(data.status)} Processing contract...`;
+      setTimeout(poll, 1500);
+    } else if (data.status === "complete") {
+      statusLine.innerHTML = `${statusBadge(data.status)} Done`;
+      const resultsRes = await fetch(`${API}/v1/contracts/${contractId}/results`);
+      const results = await resultsRes.json();
+      document.getElementById("upload-results").innerHTML = `<div class="card">${resultsHtml(results)}</div>`;
+      uploadBtn.disabled = false;
+    } else {
+      statusLine.innerHTML = `${statusBadge(data.status)}`;
+      showUploadError(new Error(data.error || "Processing failed"));
+      uploadBtn.disabled = false;
+    }
+  };
+  poll();
+}
+
+/* ---------- CONTRACTS LIST ---------- */
+async function loadContracts() {
+  const container = document.getElementById("contracts-list");
+  container.innerHTML = `<div class="empty">Loading...</div>`;
+  try {
+    const res = await fetch(`${API}/v1/contracts`);
+    const items = await res.json();
+    if (items.length === 0) {
+      container.innerHTML = `<div class="empty">No contracts uploaded yet</div>`;
+      return;
+    }
+    container.innerHTML = `
+      <table>
+        <thead><tr><th>Filename</th><th>Status</th><th>Risk</th><th>Uploaded</th></tr></thead>
+        <tbody>
+          ${items.map(c => `
+            <tr class="clickable" onclick="openDetail('${c.id}', 'contracts')">
+              <td>${escapeHtml(c.filename)}</td>
+              <td>${statusBadge(c.status)}</td>
+              <td>${c.risk_level ? `<span class="badge risk-${c.risk_level}">${c.risk_level}</span>` : "—"}</td>
+              <td>${new Date(c.created_at).toLocaleString()}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>`;
+  } catch (err) {
+    container.innerHTML = `<div class="error-box">Failed to load contracts: ${err.message}</div>`;
+  }
+}
+document.getElementById("refresh-contracts").addEventListener("click", loadContracts);
+
+/* ---------- DETAIL ---------- */
+async function renderDetail(contractId) {
+  const el = document.getElementById("detail-content");
+  el.innerHTML = `<div class="card empty">Loading...</div>`;
+  try {
+    const res = await fetch(`${API}/v1/contracts/${contractId}/results`);
+    if (!res.ok) throw new Error(await res.text());
+    const r = await res.json();
+    el.innerHTML = `<div class="card"><h2 style="margin-top:0">${escapeHtml(r.filename)}</h2>${resultsHtml(r)}</div>`;
+  } catch (err) {
+    el.innerHTML = `<div class="error-box">Failed to load: ${err.message}</div>`;
+  }
+}
+
+/* ---------- SEARCH ---------- */
+document.querySelectorAll(".search-tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".search-tabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("search-semantic").style.display = btn.dataset.search === "semantic" ? "block" : "none";
+    document.getElementById("search-clause").style.display = btn.dataset.search === "clause" ? "block" : "none";
+    document.getElementById("search-results").innerHTML = "";
+  });
+});
+
+async function loadClauseTypes() {
+  const sel = document.getElementById("clause-type-select");
+  try {
+    const res = await fetch(`${API}/v1/search/clause-types`);
+    const types = await res.json();
+    sel.innerHTML = types.map(t => `<option value="${t}">${t.replaceAll("_", " ")}</option>`).join("");
+  } catch {
+    sel.innerHTML = `<option value="">(failed to load clause types)</option>`;
+  }
+}
+loadClauseTypes();
+
+document.getElementById("semantic-btn").addEventListener("click", async () => {
+  const query = document.getElementById("semantic-query").value.trim();
+  const results = document.getElementById("search-results");
+  if (!query) return;
+  results.innerHTML = `<div class="empty">Searching...</div>`;
+  try {
+    const res = await fetch(`${API}/v1/search/semantic`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, top_k: 10 })
+    });
+    const hits = await res.json();
+    if (hits.length === 0) { results.innerHTML = `<div class="empty">No matches found</div>`; return; }
+    results.innerHTML = `
+      <table>
+        <thead><tr><th>Contract</th><th>Similarity</th><th>Risk</th></tr></thead>
+        <tbody>
+          ${hits.map(h => `
+            <tr class="clickable" onclick="openDetail('${h.id}', 'search')">
+              <td>${escapeHtml(h.filename)}</td>
+              <td>${(h.score*100).toFixed(1)}%</td>
+              <td>${h.risk_level ? `<span class="badge risk-${h.risk_level}">${h.risk_level}</span>` : "—"}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>`;
+  } catch (err) {
+    results.innerHTML = `<div class="error-box">Search failed: ${err.message}</div>`;
+  }
+});
+
+document.getElementById("clause-btn").addEventListener("click", async () => {
+  const clause_type = document.getElementById("clause-type-select").value;
+  const min_confidence = parseFloat(document.getElementById("clause-min-conf").value);
+  const results = document.getElementById("search-results");
+  if (!clause_type) return;
+  results.innerHTML = `<div class="empty">Searching...</div>`;
+  try {
+    const res = await fetch(`${API}/v1/search/clause`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ clause_type, min_confidence })
+    });
+    const hits = await res.json();
+    if (hits.length === 0) { results.innerHTML = `<div class="empty">No matches found</div>`; return; }
+    results.innerHTML = `
+      <table>
+        <thead><tr><th>Contract</th><th>Confidence</th></tr></thead>
+        <tbody>
+          ${hits.map(h => `
+            <tr class="clickable" onclick="openDetail('${h.id}', 'search')">
+              <td>${escapeHtml(h.filename)}</td>
+              <td>${(h.confidence*100).toFixed(0)}%</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>`;
+  } catch (err) {
+    results.innerHTML = `<div class="error-box">Search failed: ${err.message}</div>`;
+  }
+});
+</script>
+</body>
+</html>
