@@ -1,19 +1,11 @@
-MODEL TRANING & FINE TUNING - MEMBER 5
-YASH-KATHIRIYA
 
 Phase 1: Data Parsing & Baseline Modeling — ✅ Complete
 Phase 2: Legal NLP, Clause Classification & Risk Scoring — ✅ Complete
 Phase 3: Vector Search, API & Web UI — ✅ Complete
-Phase 4: Docker, Deployment & Load Testing — ⏳ In Progress
+Phase 4: Docker, Deployment & Load Testing — ⏳ Currently In Progress
 
-Fine-Tuning – Clause Classification
-main
 
-Overview
-
-YASH-KATHIRIYA
-
-🚦 Current Status — Last Updated: 2026-08-26
+🚦 Current Status — Last Updated: 2026-09-02
 
 ✅ Phases 1–3 Complete and Verified End-to-End
 
@@ -392,7 +384,7 @@ Pandas
 
 NumPy
 
-🚦 Current Status — Last Updated: 2026-08-24
+🚦 Current Status — Last Updated: 2026-09-02
 
 ✅ Currently At: Phase 1 Completed
 
@@ -1633,5 +1625,5 @@ Phase 3 — ✅ Completed
 
 Phase 4 — ⏳ In Progress
 
-Next Milestone: Phase 4 — ⏳ Docker, Deployment & Load Testing
+Next Milestone: Phase 4 — ⏳ Currently Working: Docker, Deployment & Load Testing
 main
