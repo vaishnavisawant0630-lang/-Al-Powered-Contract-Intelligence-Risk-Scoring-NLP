@@ -61,8 +61,9 @@ PROTECTIVE_CLAUSES: dict[str, float] = {
 }
 
 RISK_THRESHOLDS = {
-    "LOW":    3.0,   # score below this  -> LOW
-    "MEDIUM": 7.0,   # score below this  -> MEDIUM, else HIGH
+    "LOW":    20,   # score below this  -> LOW
+    "MEDIUM": 60,   # score below this  -> MEDIUM
+    "HIGH": 80,   # score above this -> HIGH
 }
 
 for _dir in (UPLOAD_DIR, FAISS_DIR, DB_PATH.parent):

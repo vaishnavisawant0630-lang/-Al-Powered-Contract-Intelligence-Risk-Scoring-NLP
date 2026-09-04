@@ -1,21 +1,26 @@
 """
 api/pipeline.py
-=================
-Orchestrator: ties together every model from Phases 1 & 2 plus the new
-Phase 3 embedding/vector-search layer into one end-to-end flow.
+================
 
-    file on disk
-        -> ingestion.DocumentRouter          (OCR / PDF / DOCX text extraction)
-        -> ner.inference.extract_entities    (Phase 1 model)
-        -> classification.inference.classify_clauses  (Phase 2 model)
-        -> risk score (heuristic, see api.config)
-        -> embeddings.embedder + vector_store (Phase 3 semantic search)
-        -> persisted to the Contract row via api.database
+End-to-end contract processing pipeline:
 
-Runs inside a FastAPI BackgroundTask (see api/routers/contracts.py) so the
-upload endpoint returns immediately and processing happens after the
-response is sent — standing in for the Celery worker in phase_03_tasks.md.
+    File
+      ↓
+    Document extraction / OCR
+      ↓
+    NER
+      ↓
+    Clause classification
+      ↓
+    Risk scoring
+      ↓
+    Embedding / vector store
+      ↓
+    Database persistence
+
+Runs as a FastAPI BackgroundTask.
 """
+
 from __future__ import annotations
 
 import json
@@ -40,123 +45,624 @@ logger = logging.getLogger(__name__)
 _MIN_PARAGRAPH_CHARS = 40
 
 
-def _split_into_paragraphs(text: str) -> list[str]:
-    """Split a contract into clause-sized chunks.
+# ============================================================
+# TEXT SPLITTING
+# ============================================================
 
-    The classifier was trained on individual CUAD clause spans (short,
-    single-topic excerpts), not whole multi-clause documents. Classifying
-    the full document as one input dilutes the signal across many topics
-    at once. Splitting on blank lines / numbered-clause boundaries and
-    classifying each chunk separately much more closely matches the
-    training distribution.
-
-    Falls back to the whole text as a single "paragraph" if the document
-    has no blank-line structure (e.g. OCR output with no paragraph breaks).
+def _split_into_paragraphs(
+    text: str,
+) -> list[str]:
     """
-    # Split on blank lines, or on "<number>. WORDS:" clause headers.
-    chunks = re.split(r"\n\s*\n|\n(?=\d+\.\s+[A-Z])", text)
-    chunks = [c.strip() for c in chunks if len(c.strip()) >= _MIN_PARAGRAPH_CHARS]
-    return chunks if chunks else [text]
+    Split contract text into clause-sized chunks.
+
+    The classifier was trained on individual clause spans,
+    so classifying smaller chunks gives better results than
+    sending the entire contract at once.
+    """
+
+    if not text or not text.strip():
+        return []
+
+    chunks = re.split(
+        r"\n\s*\n|\n(?=\d+\.\s+[A-Z])",
+        text,
+    )
+
+    chunks = [
+        chunk.strip()
+        for chunk in chunks
+        if len(chunk.strip())
+        >= _MIN_PARAGRAPH_CHARS
+    ]
+
+    return (
+        chunks
+        if chunks
+        else [text.strip()]
+    )
 
 
-def _classify_document(raw_text: str, ner_entities: list) -> list:
-    """Classify each paragraph separately and merge by max confidence per label."""
-    from classification.inference import classify_clauses
+# ============================================================
+# CLAUSE CLASSIFICATION
+# ============================================================
 
-    paragraphs = _split_into_paragraphs(raw_text)
-    logger.info("classifying %d paragraph(s)", len(paragraphs))
+def _classify_document(
+    raw_text: str,
+    ner_entities: list,
+) -> list:
+    """
+    Classify each paragraph separately.
+
+    If the same clause type appears multiple times,
+    keep the result with the highest confidence.
+
+    Each ClauseResult already contains the actual text
+    classified by the model.
+    """
+
+    from classification.inference import (
+        classify_clauses,
+    )
+
+    paragraphs = _split_into_paragraphs(
+        raw_text
+    )
+
+    logger.info(
+        "Classifying %d paragraph(s)",
+        len(paragraphs),
+    )
 
     best: dict[str, object] = {}
-    for para in paragraphs:
-        para_results = classify_clauses(para, ner_entities=ner_entities)
-        for r in para_results:
-            current = best.get(r.clause_type)
-            if current is None or r.confidence > current.confidence:
-                best[r.clause_type] = r
 
-    return list(best.values())
+    for index, para in enumerate(
+        paragraphs,
+        start=1,
+    ):
+
+        logger.info(
+            "Classifying paragraph %d/%d",
+            index,
+            len(paragraphs),
+        )
+
+        # ----------------------------------------------------
+        # Classify paragraph
+        # ----------------------------------------------------
+
+        para_results = classify_clauses(
+            para,
+            ner_entities=ner_entities,
+        )
+
+        # ----------------------------------------------------
+        # Store highest-confidence result
+        # ----------------------------------------------------
+
+        for result in para_results:
+
+            current = best.get(
+                result.clause_type
+            )
+
+            if (
+                current is None
+                or result.confidence
+                > current.confidence
+            ):
+
+                best[
+                    result.clause_type
+                ] = result
+
+    return list(
+        best.values()
+    )
 
 
-def _compute_risk(clauses: list) -> tuple[float, str]:
-    """Simple weighted-sum heuristic over which clauses are present.
-    This is intentionally transparent (not a learned model) so every score
-    is explainable in the risk report — see api/routers/risk.py."""
+# ============================================================
+# RISK CALCULATION
+# ============================================================
+
+def _compute_risk(
+    clauses: list,
+) -> tuple[float, str]:
+    """
+    Calculate contract risk on a 0-100 scale.
+
+    Risk levels:
+        0-29   = LOW
+        30-59  = MEDIUM
+        60-79  = HIGH
+        80-100 = CRITICAL
+    """
+
     score = 0.0
-    for c in clauses:
-        if not c.present:
+
+    logger.info(
+        "Calculating risk from %d clause(s)",
+        len(clauses),
+    )
+
+    for clause in clauses:
+
+        if not clause.present:
             continue
-        weight = HIGH_RISK_CLAUSES.get(c.clause_type) or PROTECTIVE_CLAUSES.get(c.clause_type)
-        if weight:
-            score += weight * c.confidence
 
-    score = max(0.0, score)
+        clause_type = (
+            clause.clause_type
+        )
+
+        confidence = float(
+            clause.confidence or 0.0
+        )
+
+        # ----------------------------------------------------
+        # High-risk clause
+        # ----------------------------------------------------
+
+        if clause_type in HIGH_RISK_CLAUSES:
+
+            weight = (
+                HIGH_RISK_CLAUSES[
+                    clause_type
+                ]
+            )
+
+            contribution = (
+                weight * confidence
+            )
+
+            score += contribution
+
+            logger.info(
+                "High-risk clause: %s | "
+                "weight=%s | "
+                "confidence=%.3f | "
+                "contribution=%.3f",
+                clause_type,
+                weight,
+                confidence,
+                contribution,
+            )
+
+        # ----------------------------------------------------
+        # Protective clause
+        # ----------------------------------------------------
+
+        elif clause_type in PROTECTIVE_CLAUSES:
+
+            weight = (
+                PROTECTIVE_CLAUSES[
+                    clause_type
+                ]
+            )
+
+            contribution = (
+                weight * confidence
+            )
+
+            score -= contribution
+
+            logger.info(
+                "Protective clause: %s | "
+                "weight=%s | "
+                "confidence=%.3f | "
+                "contribution=-%.3f",
+                clause_type,
+                weight,
+                confidence,
+                contribution,
+            )
+
+    # --------------------------------------------------------
+    # Keep score between 0 and 100
+    # --------------------------------------------------------
+
+    score = max(
+        0.0,
+        min(100.0, score),
+    )
+
+    # --------------------------------------------------------
+    # Risk level
+    # --------------------------------------------------------
+
     if score < RISK_THRESHOLDS["LOW"]:
+
         level = "LOW"
+
     elif score < RISK_THRESHOLDS["MEDIUM"]:
+
         level = "MEDIUM"
-    else:
+
+    elif score < RISK_THRESHOLDS["HIGH"]:
+
         level = "HIGH"
-    return round(score, 2), level
+
+    else:
+
+        level = "CRITICAL"
+
+    score = round(
+        score,
+        2,
+    )
+
+    logger.info(
+        "FINAL RISK SCORE = %.2f | LEVEL = %s",
+        score,
+        level,
+    )
+
+    return score, level
 
 
-async def process_contract(contract_id: str, file_path: str) -> None:
-    """Runs the full pipeline for one contract and persists results.
-    Any exception is caught and written to the row's `error` column so the
-    status endpoint can report a clean failure instead of hanging forever."""
+# ============================================================
+# MAIN PIPELINE
+# ============================================================
+
+async def process_contract(
+    contract_id: str,
+    file_path: str,
+) -> None:
+    """
+    Process one uploaded contract.
+
+    Pipeline:
+
+        1. Document extraction
+        2. NER
+        3. Clause classification
+        4. Risk scoring
+        5. Embedding
+        6. Vector store
+        7. Database persistence
+    """
+
     async with SessionLocal() as session:
-        result = await session.execute(select(Contract).where(Contract.id == contract_id))
-        contract = result.scalar_one_or_none()
+
+        # ----------------------------------------------------
+        # Find contract
+        # ----------------------------------------------------
+
+        result = await session.execute(
+            select(Contract).where(
+                Contract.id == contract_id
+            )
+        )
+
+        contract = (
+            result.scalar_one_or_none()
+        )
+
         if contract is None:
-            logger.error("process_contract: contract %s not found", contract_id)
+
+            logger.error(
+                "Contract %s not found",
+                contract_id,
+            )
+
             return
 
+        # ----------------------------------------------------
+        # Processing status
+        # ----------------------------------------------------
+
         contract.status = "processing"
+
+        contract.error = None
+
         await session.commit()
+
+        logger.info(
+            "Started processing contract %s",
+            contract_id,
+        )
 
         try:
-            # 1. Extract text (auto-routes PDF/DOCX/TXT, OCR fallback for scans)
-            from ingestion.document_router import DocumentRouter
-            extraction = DocumentRouter().route(file_path)
-            raw_text = extraction.raw_text
 
+            # =================================================
+            # 1. DOCUMENT EXTRACTION
+            # =================================================
+
+            logger.info(
+                "[1/6] Extracting document text..."
+            )
+
+            from ingestion.document_router import (
+                DocumentRouter,
+            )
+
+            extraction = (
+                DocumentRouter().route(
+                    file_path
+                )
+            )
+
+            raw_text = (
+                extraction.raw_text
+            )
+
+            if (
+                not raw_text
+                or not raw_text.strip()
+            ):
+
+                raise ValueError(
+                    "No text could be extracted "
+                    "from the uploaded document."
+                )
+
+            logger.info(
+                "Extracted %d characters",
+                len(raw_text),
+            )
+
+            # =================================================
             # 2. NER
-            from ner.inference import extract_entities, load_model
-            load_model(str(NER_MODEL_PATH))
-            entities = extract_entities(raw_text)
+            # =================================================
 
-            # 3. Clause classification (per-paragraph, then merged — see _classify_document)
-            from classification.inference import load_classifier
-            load_classifier(model_dir=str(CLASSIFIER_MODEL_PATH), labels_path=str(CLAUSE_LABELS_PATH))
-            clauses = _classify_document(raw_text, entities)
+            logger.info(
+                "[2/6] Running NER..."
+            )
 
-            # 4. Risk score
-            risk_score, risk_level = _compute_risk(clauses)
+            from ner.inference import (
+                extract_entities,
+                load_model,
+            )
 
-            # 5. Embedding + vector index
-            from embeddings.embedder import embed_text
-            from embeddings.vector_store import add as vs_add
-            vector = embed_text(raw_text)
-            vs_add(contract_id, vector)
+            load_model(
+                str(NER_MODEL_PATH)
+            )
 
-            # 6. Persist
+            entities = extract_entities(
+                raw_text
+            )
+
+            logger.info(
+                "NER extracted %d entities",
+                len(entities),
+            )
+
+            # =================================================
+            # 3. CLAUSE CLASSIFICATION
+            # =================================================
+
+            logger.info(
+                "[3/6] Running clause classification..."
+            )
+
+            from classification.inference import (
+                load_classifier,
+            )
+
+            load_classifier(
+                model_dir=str(
+                    CLASSIFIER_MODEL_PATH
+                ),
+                labels_path=str(
+                    CLAUSE_LABELS_PATH
+                ),
+            )
+
+            clauses = (
+                _classify_document(
+                    raw_text,
+                    entities,
+                )
+            )
+
+            logger.info(
+                "Detected %d clause types",
+                len(clauses),
+            )
+
+            # =================================================
+            # 4. RISK SCORE
+            # =================================================
+
+            logger.info(
+                "[4/6] Calculating risk score..."
+            )
+
+            (
+                risk_score,
+                risk_level,
+            ) = _compute_risk(
+                clauses
+            )
+
+            logger.info(
+                "Risk score = %.2f | "
+                "Risk level = %s",
+                risk_score,
+                risk_level,
+            )
+
+            # =================================================
+            # 5. EMBEDDING / VECTOR STORE
+            # =================================================
+
+            logger.info(
+                "[5/6] Creating document embedding..."
+            )
+
+            from embeddings.embedder import (
+                embed_text,
+            )
+
+            from embeddings.vector_store import (
+                add as vs_add,
+            )
+
+            vector = embed_text(
+                raw_text
+            )
+
+            vs_add(
+                contract_id,
+                vector,
+            )
+
+            logger.info(
+                "Embedding stored for contract %s",
+                contract_id,
+            )
+
+            # =================================================
+            # 6. DATABASE PERSISTENCE
+            # =================================================
+
+            logger.info(
+                "[6/6] Saving analysis results..."
+            )
+
+            # -------------------------------------------------
+            # Raw extracted text
+            # -------------------------------------------------
+
             contract.raw_text = raw_text
-            contract.entities_json = json.dumps([
-                {"text": e.text, "label": e.label, "start_char": e.start_char,
-                 "end_char": e.end_char, "confidence": e.confidence}
-                for e in entities
-            ])
-            contract.clauses_json = json.dumps([
-                {"clause_type": c.clause_type, "present": c.present,
-                 "confidence": c.confidence, "evidence_spans": c.evidence_spans}
-                for c in clauses
-            ])
-            contract.risk_score = risk_score
-            contract.risk_level = risk_level
-            contract.status = "complete"
 
-        except Exception as exc:  # noqa: BLE001 — deliberately broad: this is a background job
-            logger.exception("Pipeline failed for contract %s", contract_id)
+            # -------------------------------------------------
+            # NER results
+            # -------------------------------------------------
+
+            contract.entities_json = (
+                json.dumps(
+                    [
+                        {
+                            "text": entity.text,
+                            "label": entity.label,
+                            "start_char": entity.start_char,
+                            "end_char": entity.end_char,
+                            "confidence": entity.confidence,
+                        }
+                        for entity in entities
+                    ]
+                )
+            )
+
+            # -------------------------------------------------
+            # Clause results
+            # -------------------------------------------------
+
+            contract.clauses_json = (
+                json.dumps(
+                    [
+                        {
+                            "clause_type":
+                                clause.clause_type,
+
+                            "present":
+                                clause.present,
+
+                            "confidence":
+                                float(
+                                    clause.confidence
+                                    or 0.0
+                                ),
+
+                            # =================================
+                            # IMPORTANT:
+                            # Actual clause text
+                            # =================================
+
+                            "text":
+                                clause.clause_text,
+
+                            # =================================
+                            # Evidence spans
+                            # =================================
+
+                            "evidence_spans":
+                                clause.evidence_spans,
+                        }
+                        for clause in clauses
+                    ]
+                )
+            )
+
+            # -------------------------------------------------
+            # Risk
+            # -------------------------------------------------
+
+            contract.risk_score = (
+                risk_score
+            )
+
+            contract.risk_level = (
+                risk_level
+            )
+
+            # -------------------------------------------------
+            # Completed
+            # -------------------------------------------------
+
+            contract.status = "completed"
+
+            contract.error = None
+
+            await session.commit()
+
+            # =================================================
+            # LOGGING
+            # =================================================
+
+            logger.info(
+                "================================================"
+            )
+
+            logger.info(
+                "CONTRACT PROCESSING COMPLETED"
+            )
+
+            logger.info(
+                "Contract ID : %s",
+                contract_id,
+            )
+
+            logger.info(
+                "Risk Score  : %.2f",
+                risk_score,
+            )
+
+            logger.info(
+                "Risk Level  : %s",
+                risk_level,
+            )
+
+            logger.info(
+                "Clauses     : %d",
+                len(clauses),
+            )
+
+            logger.info(
+                "Entities    : %d",
+                len(entities),
+            )
+
+            logger.info(
+                "Status      : completed"
+            )
+
+            logger.info(
+                "================================================"
+            )
+
+        except Exception as exc:
+
+            # ------------------------------------------------
+            # Pipeline failed
+            # ------------------------------------------------
+
+            logger.exception(
+                "Pipeline failed for contract %s",
+                contract_id,
+            )
+
             contract.status = "failed"
+
             contract.error = str(exc)
 
-        await session.commit()
+            await session.commit()

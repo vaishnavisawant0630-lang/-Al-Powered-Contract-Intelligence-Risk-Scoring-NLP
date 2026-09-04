@@ -28,7 +28,7 @@ async def init_db() -> None:
         await conn.run_sync(Base.metadata.create_all)
 
 
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncSession: # pyright: ignore[reportInvalidTypeForm]
     """FastAPI dependency — yields a DB session per request."""
     async with SessionLocal() as session:
         yield session

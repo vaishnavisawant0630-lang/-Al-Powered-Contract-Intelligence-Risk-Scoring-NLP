@@ -19,53 +19,140 @@ from api.schemas import (
 
 router = APIRouter(prefix="/v1/search", tags=["search"])
 
-
-@router.get("/clause-types", response_model=list[str])
-async def clause_types():
-    """All known clause type labels — powers the UI's clause-search dropdown."""
-    return json.loads(CLAUSE_LABELS_PATH.read_text())
-
-
-@router.post("/semantic", response_model=list[SemanticSearchResult])
-async def semantic_search(req: SemanticSearchRequest, session: AsyncSession = Depends(get_session)):
-    """Embeds the query and finds the most similar contracts via FAISS."""
-    from embeddings.embedder import embed_text
-    from embeddings.vector_store import search as vs_search
-
-    query_vector = embed_text(req.query)
-    hits = vs_search(query_vector, top_k=req.top_k)
-
-    results = []
-    for contract_id, score in hits:
-        result = await session.execute(select(Contract).where(Contract.id == contract_id))
-        contract = result.scalar_one_or_none()
-        if contract is None:
-            continue
-        results.append(SemanticSearchResult(
-            id=contract.id, filename=contract.filename, score=score, risk_level=contract.risk_level
-        ))
-    return results
-
-
 @router.post("/clause", response_model=list[ClauseSearchResult])
-async def clause_search(req: ClauseSearchRequest, session: AsyncSession = Depends(get_session)):
-    """Finds all processed contracts containing a given clause type above
-    a confidence threshold. Simple in-memory filter over the DB (fine at
-    the scale of a local demo — swap for a proper indexed query if this
-    ever needs to run over thousands of contracts)."""
+async def clause_search(
+    req: ClauseSearchRequest,
+    session: AsyncSession = Depends(get_session)
+):
+    """
+    Search detected clauses by contract, clause type,
+    or both.
+    """
+
     result = await session.execute(
-        select(Contract).where(Contract.status == "complete", Contract.clauses_json.is_not(None))
+        select(Contract).where(
+            Contract.status == "completed",
+            Contract.clauses_json.is_not(None)
+        )
     )
+
     contracts = result.scalars().all()
 
+    requested_type = (
+        req.clause_type.strip().lower()
+        if req.clause_type
+        else None
+    )
+
+    requested_contract_id = (
+        req.contract_id.strip()
+        if req.contract_id
+        else None
+    )
+
+    requested_contract_name = (
+        req.contract_name.strip().lower()
+        if req.contract_name
+        else None
+    )
+
     matches = []
+
     for contract in contracts:
-        clauses = json.loads(contract.clauses_json)
-        for c in clauses:
-            if c["clause_type"] == req.clause_type and c["present"] and c["confidence"] >= req.min_confidence:
-                matches.append(ClauseSearchResult(
-                    id=contract.id, filename=contract.filename,
-                    confidence=c["confidence"], evidence_spans=c["evidence_spans"],
-                ))
-                break
-    return sorted(matches, key=lambda m: m.confidence, reverse=True)
+
+        # ------------------------------------------
+        # CONTRACT FILTER
+        # ------------------------------------------
+
+        if requested_contract_id:
+
+            if contract.id != requested_contract_id:
+                continue
+
+        if requested_contract_name:
+
+            filename = (
+                contract.filename or ""
+            ).lower()
+
+            if requested_contract_name not in filename:
+                continue
+
+        # ------------------------------------------
+        # LOAD CLAUSES
+        # ------------------------------------------
+
+        try:
+
+            clauses = json.loads(
+                contract.clauses_json
+            )
+
+        except (json.JSONDecodeError, TypeError):
+
+            continue
+
+        if not isinstance(clauses, list):
+            continue
+
+        # ------------------------------------------
+        # CLAUSE FILTER
+        # ------------------------------------------
+
+        for clause in clauses:
+
+            if not isinstance(clause, dict):
+                continue
+
+            clause_type = str(
+                clause.get(
+                    "clause_type",
+                    ""
+                )
+            ).strip().lower()
+
+            present = bool(
+                clause.get(
+                    "present",
+                    False
+                )
+            )
+
+            confidence = float(
+                clause.get(
+                    "confidence",
+                    0.0
+                )
+            )
+
+            # Clause type filter
+            if requested_type:
+
+                if clause_type != requested_type:
+                    continue
+
+            # Present filter
+            if not present:
+                continue
+
+            # Confidence filter
+            if confidence < req.min_confidence:
+                continue
+
+            matches.append(
+                ClauseSearchResult(
+                    id=contract.id,
+                    filename=contract.filename,
+                    confidence=confidence,
+                    evidence_spans=clause.get(
+                        "evidence_spans",
+                        []
+                    )
+                )
+            )
+
+    return sorted(
+        matches,
+        key=lambda x: x.confidence,
+        reverse=True
+    )

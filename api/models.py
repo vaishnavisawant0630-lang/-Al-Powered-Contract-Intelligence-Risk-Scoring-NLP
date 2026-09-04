@@ -29,7 +29,7 @@ class Contract(Base):
     filename: Mapped[str] = mapped_column(String(512))
     file_path: Mapped[str] = mapped_column(String(1024))
 
-    # pending -> processing -> complete | failed
+    # pending -> processing -> completed | failed
     status: Mapped[str] = mapped_column(String(32), default="pending")
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
 
