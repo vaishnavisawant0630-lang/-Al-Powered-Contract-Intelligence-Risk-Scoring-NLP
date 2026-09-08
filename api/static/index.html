@@ -3,4975 +3,720 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>ContractIQ | Contract Intelligence</title>
-
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    --bg: #07111f;
-    --sidebar: #091525;
-    --card: #0d1b2d;
-    --card2: #102238;
-    --border: #1c334d;
-    --text: #e8f0f8;
-    --muted: #8da3b8;
-    --blue: #3b82f6;
-    --blue2: #60a5fa;
-    --green: #22c55e;
-    --yellow: #f59e0b;
-    --orange: #f97316;
-    --red: #ef4444;
-    --shadow: 0 15px 40px rgba(0,0,0,.25);
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: Inter, Arial, Helvetica, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-}
-
-/* ================= SIDEBAR ================= */
-
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 250px;
-    height: 100vh;
-    background: var(--sidebar);
-    border-right: 1px solid var(--border);
-    padding: 22px 15px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 12px 25px;
-}
-
-.logo-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    font-weight: 800;
-    box-shadow: 0 8px 20px rgba(59,130,246,.25);
-}
-
-.logo-text {
-    font-size: 21px;
-    font-weight: 800;
-}
-
-.logo-text span {
-    color: var(--blue2);
-}
-
-.nav {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-.nav-btn {
-    width: 100%;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    padding: 13px 14px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    cursor: pointer;
-    text-align: left;
-    font-size: 14px;
-    transition: .2s;
-}
-
-.nav-btn:hover {
-    background: #102238;
-    color: white;
-}
-
-.nav-btn.active {
-    background: rgba(59,130,246,.16);
-    color: #72aefc;
-    border: 1px solid rgba(59,130,246,.22);
-}
-
-.nav-icon {
-    width: 22px;
-    text-align: center;
-    font-size: 17px;
-}
-
-.sidebar-bottom {
-    margin-top: auto;
-}
-
-.api-status {
-    background: #0d1b2d;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 13px;
-    font-size: 12px;
-}
-
-.api-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 5px;
-}
-
-.status-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--yellow);
-}
-
-.status-dot.online {
-    background: var(--green);
-    box-shadow: 0 0 10px rgba(34,197,94,.7);
-}
-
-.status-dot.offline {
-    background: var(--red);
-}
-
-/* ================= MAIN ================= */
-
-.main {
-    margin-left: 250px;
-    min-height: 100vh;
-}
-
-.topbar {
-    height: 72px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    background: rgba(7,17,31,.92);
-    position: sticky;
-    top: 0;
-    z-index: 900;
-    backdrop-filter: blur(12px);
-}
-
-.top-title h1 {
-    font-size: 20px;
-}
-
-.top-title p {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-}
-
-.refresh-btn {
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    border-radius: 9px;
-    padding: 9px 14px;
-    cursor: pointer;
-}
-
-.refresh-btn:hover {
-    border-color: var(--blue);
-}
-
-/* ================= SECTIONS ================= */
-
-.content {
-    padding: 28px;
-}
-
-.section {
-    display: none;
-    animation: fade .2s ease;
-}
-
-.section.active {
-    display: block;
-}
-
-@keyframes fade {
-    from {
-        opacity: .2;
-        transform: translateY(4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ================= DASHBOARD ================= */
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 20px;
-}
-
-.stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: var(--shadow);
-}
-
-.stat-label {
-    color: var(--muted);
-    font-size: 12px;
-    margin-bottom: 10px;
-}
-
-.stat-value {
-    font-size: 30px;
-    font-weight: 800;
-}
-
-.stat-sub {
-    margin-top: 6px;
-    color: var(--muted);
-    font-size: 11px;
-}
-
-/* ================= CARDS ================= */
-
-.card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 22px;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-}
-
-.card-header h2 {
-    font-size: 17px;
-}
-
-.card-header p {
-    color: var(--muted);
-    font-size: 12px;
-}
-
-/* ================= RISK METER ================= */
-
-.risk-layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 30px;
-    align-items: center;
-}
-
-.risk-circle {
-    width: 230px;
-    height: 230px;
-    border-radius: 50%;
-    margin: auto;
-    background: conic-gradient(
-        var(--risk-color, var(--green)) var(--risk-progress, 0%),
-        #17283b var(--risk-progress, 0%)
-    );
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background .7s ease;
-    box-shadow:
-        0 0 0 8px rgba(255,255,255,.015),
-        0 15px 40px rgba(0,0,0,.3);
-}
-
-.risk-circle::after {
-    content: "";
-    position: absolute;
-    width: 178px;
-    height: 178px;
-    background: var(--card);
-    border-radius: 50%;
-}
-
-.risk-center {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-}
-
-.risk-number {
-    font-size: 52px;
-    line-height: 1;
-    font-weight: 900;
-}
-
-.risk-outof {
-    color: var(--muted);
-    font-size: 11px;
-    margin-top: 4px;
-}
-
-.risk-level {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 6px 13px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .7px;
-}
-
-.risk-level.low {
-    background: rgba(34,197,94,.15);
-    color: #4ade80;
-}
-
-.risk-level.medium {
-    background: rgba(245,158,11,.15);
-    color: #fbbf24;
-}
-
-.risk-level.high {
-    background: rgba(249,115,22,.15);
-    color: #fb923c;
-}
-
-.risk-level.critical {
-    background: rgba(239,68,68,.15);
-    color: #f87171;
-}
-
-.risk-info h3 {
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.risk-info p {
-    color: var(--muted);
-    line-height: 1.6;
-    font-size: 13px;
-}
-
-.risk-scale {
-    margin-top: 22px;
-}
-
-.scale-row {
-    display: flex;
-    justify-content: space-between;
-    color: var(--muted);
-    font-size: 10px;
-    margin-bottom: 8px;
-}
-
-.scale-bar {
-    height: 9px;
-    border-radius: 20px;
-    background: linear-gradient(
-        to right,
-        #22c55e 0%,
-        #22c55e 30%,
-        #f59e0b 30%,
-        #f59e0b 60%,
-        #f97316 60%,
-        #f97316 80%,
-        #ef4444 80%,
-        #ef4444 100%
-    );
-}
-
-/* ================= UPLOAD ================= */
-
-.upload-box {
-    border: 2px dashed #29435e;
-    border-radius: 15px;
-    padding: 45px 20px;
-    text-align: center;
-    transition: .2s;
-}
-
-.upload-box.drag {
-    border-color: var(--blue);
-    background: rgba(59,130,246,.06);
-}
-
-.upload-icon {
-    font-size: 42px;
-    margin-bottom: 12px;
-}
-
-.upload-box h3 {
-    margin-bottom: 7px;
-}
-
-.upload-box p {
-    color: var(--muted);
-    font-size: 13px;
-}
-
-.file-input {
-    display: none;
-}
-
-.upload-btn {
-    margin-top: 20px;
-    background: var(--blue);
-    border: none;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 9px;
-    cursor: pointer;
-    font-weight: 700;
-}
-
-.upload-btn:hover {
-    background: #2563eb;
-}
-
-.selected-file {
-    margin-top: 15px;
-    color: var(--blue2);
-    font-size: 13px;
-}
-
-.progress-container {
-    display: none;
-    margin-top: 20px;
-}
-
-.progress-track {
-    height: 8px;
-    background: #182a3d;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    width: 0%;
-    height: 100%;
-    background: var(--blue);
-    transition: width .3s;
-}
-
-.progress-text {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 7px;
-    color: var(--muted);
-    font-size: 11px;
-}
-
-/* ================= CONTRACT TABLE ================= */
-
-.table-wrap {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    text-align: left;
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 12px;
-    border-bottom: 1px solid var(--border);
-}
-
-td {
-    padding: 14px 12px;
-    border-bottom: 1px solid rgba(28,51,77,.65);
-    font-size: 13px;
-}
-
-tr:hover td {
-    background: rgba(255,255,255,.015);
-}
-
-.contract-name {
-    font-weight: 700;
-}
-
-.contract-id {
-    color: var(--muted);
-    font-size: 10px;
-    margin-top: 4px;
-}
-
-.status {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 700;
-}
-
-.status.completed {
-    background: rgba(34,197,94,.12);
-    color: #4ade80;
-}
-
-.status.processing {
-    background: rgba(59,130,246,.12);
-    color: #60a5fa;
-}
-
-.status.failed {
-    background: rgba(239,68,68,.12);
-    color: #f87171;
-}
-
-.action-btn {
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    border-radius: 7px;
-    padding: 7px 10px;
-    cursor: pointer;
-    margin-right: 4px;
-}
-
-.action-btn:hover {
-    border-color: var(--blue);
-    color: var(--blue2);
-}
-
-.delete-btn:hover {
-    border-color: var(--red);
-    color: #f87171;
-}
-
-/* ================= SEARCH ================= */
-
-.search-row {
-    display: grid;
-    grid-template-columns: 1fr 230px auto;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-
-.search-input,
-.select-input {
-    width: 100%;
-    background: #091727;
-    border: 1px solid var(--border);
-    color: white;
-    border-radius: 9px;
-    padding: 12px 13px;
-    outline: none;
-}
-
-.search-input:focus,
-.select-input:focus {
-    border-color: var(--blue);
-}
-
-.clear-btn {
-    background: #182a3d;
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 9px;
-    padding: 0 15px;
-    cursor: pointer;
-}
-
-.clause-result {
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: 16px;
-    margin-bottom: 10px;
-    background: #0b1929;
-}
-
-.clause-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 9px;
-}
-
-.clause-type {
-    color: #7db3ff;
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.clause-contract {
-    color: var(--muted);
-    font-size: 10px;
-}
-
-.clause-text {
-    color: #c4d1df;
-    font-size: 12px;
-    line-height: 1.6;
-}
-
-/* ================= RESULTS ================= */
-
-.results-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.back-btn {
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text);
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.result-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-}
-
-.entity-card,
-.clause-card {
-    background: #0b1929;
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: 15px;
-    margin-bottom: 10px;
-}
-
-.entity-name {
-    font-size: 11px;
-    color: var(--blue2);
-    font-weight: 800;
-    margin-bottom: 5px;
-}
-
-.entity-value {
-    font-size: 13px;
-    word-break: break-word;
-}
-
-.badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 20px;
-    background: #172b43;
-    color: #9cc4f7;
-    font-size: 10px;
-}
-
-/* =========================================================
-   NEW RESULT STYLES
-   Same UI style - only extends the existing result cards.
-========================================================= */
-
-.result-risk-summary {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 18px;
-}
-
-.result-risk-card {
-    background: #0b1929;
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: 18px;
-}
-
-.result-risk-label {
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.result-risk-score {
-    font-size: 32px;
-    font-weight: 900;
-}
-
-.result-risk-score span {
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 500;
-}
-
-.result-risk-bar {
-    height: 7px;
-    background: #182a3d;
-    border-radius: 20px;
-    margin-top: 13px;
-    overflow: hidden;
-}
-
-.result-risk-fill {
-    height: 100%;
-    border-radius: 20px;
-    transition: width .5s ease;
-}
-
-.result-risk-level-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.result-risk-description {
-    margin-top: 12px;
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-/* Entity grouping */
-
-.entity-group {
-    background: #0b1929;
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: 15px;
-    margin-bottom: 10px;
-}
-
-.entity-group-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.entity-group-name {
-    color: var(--blue2);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .5px;
-}
-
-.entity-count {
-    background: #172b43;
-    color: #9cc4f7;
-    padding: 3px 7px;
-    border-radius: 20px;
-    font-size: 9px;
-}
-
-.entity-values {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-.entity-value-item {
-    background: #102238;
-    border: 1px solid rgba(28,51,77,.7);
-    border-radius: 7px;
-    padding: 9px 10px;
-    color: #c4d1df;
-    font-size: 12px;
-    word-break: break-word;
-}
-
-/* Detected clauses */
-
-.detected-clause {
-    background: #0b1929;
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: 16px;
-    margin-bottom: 11px;
-}
-
-.detected-clause-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 11px;
-}
-
-.detected-clause-left {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-
-.clause-number {
-    width: 27px;
-    height: 27px;
-    border-radius: 7px;
-    background: rgba(59,130,246,.13);
-    color: var(--blue2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-    flex-shrink: 0;
-}
-
-.detected-clause-title {
-    color: #7db3ff;
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.detected-clause-type {
-    color: var(--muted);
-    font-size: 10px;
-    margin-top: 3px;
-}
-
-.confidence-label {
-    color: #9cc4f7;
-    background: #172b43;
-    border-radius: 20px;
-    padding: 5px 8px;
-    font-size: 10px;
-    white-space: nowrap;
-}
-
-.actual-clause-label {
-    color: var(--muted);
-    font-size: 10px;
-    margin-bottom: 6px;
-    font-weight: 700;
-}
-
-.actual-clause-text {
-    color: #c4d1df;
-    font-size: 12px;
-    line-height: 1.7;
-    background: #091727;
-    border: 1px solid rgba(28,51,77,.7);
-    border-radius: 8px;
-    padding: 11px;
-}
-
-/* All contracts in analysis */
-
-.all-contracts-table {
-    min-width: 650px;
-}
-
-/* ================= EMPTY ================= */
-
-.empty {
-    text-align: center;
-    padding: 35px 15px;
-    color: var(--muted);
-    font-size: 13px;
-}
-
-.error-box {
-    padding: 14px;
-    border-radius: 10px;
-    background: rgba(239,68,68,.09);
-    border: 1px solid rgba(239,68,68,.25);
-    color: #fca5a5;
-    font-size: 12px;
-}
-
-/* ================= TOAST ================= */
-
-.toast {
-    position: fixed;
-    right: 25px;
-    bottom: 25px;
-    min-width: 280px;
-    max-width: 400px;
-    padding: 14px 16px;
-    border-radius: 10px;
-    background: #102238;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    z-index: 3000;
-    display: none;
-    font-size: 13px;
-}
-
-.toast.show {
-    display: block;
-    animation: toastIn .2s ease;
-}
-
-@keyframes toastIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ================= MOBILE ================= */
-
-.mobile-menu {
-    display: none;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 22px;
-    cursor: pointer;
-}
-
-@media(max-width: 1000px) {
-
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .risk-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .result-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .result-risk-summary {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media(max-width: 700px) {
-
-    .sidebar {
-        transform: translateX(-100%);
-        transition: .25s;
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-    }
-
-    .main {
-        margin-left: 0;
-    }
-
-    .mobile-menu {
-        display: block;
-    }
-
-    .topbar {
-        padding: 0 16px;
-    }
-
-    .content {
-        padding: 16px;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-    }
-
-    .search-row {
-        grid-template-columns: 1fr;
-    }
-
-    .clear-btn {
-        padding: 11px;
-    }
-
-    .detected-clause-header {
-        flex-direction: column;
-    }
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #07111f; --sidebar: #091525; --card: #0d1b2d; --card2: #102238; --border: #1c334d; --text: #e8f0f8; --muted: #8da3b8; --blue: #3b82f6; --blue2: #60a5fa; --green: #22c55e; --yellow: #f59e0b; --orange: #f97316; --red: #ef4444; --shadow: 0 15px 40px rgba(0,0,0,.25); }
+html { scroll-behavior: smooth; }
+body { font-family: Inter, Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.sidebar { position: fixed; left: 0; top: 0; width: 250px; height: 100vh; background: var(--sidebar); border-right: 1px solid var(--border); padding: 22px 15px; z-index: 1000; display: flex; flex-direction: column; }
+.logo { display: flex; align-items: center; gap: 12px; padding: 8px 12px 25px; }
+.logo-icon { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #7c3aed); display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: 800; box-shadow: 0 8px 20px rgba(59,130,246,.25); }
+.logo-text { font-size: 21px; font-weight: 800; }
+.logo-text span { color: var(--blue2); }
+.nav { display: flex; flex-direction: column; gap: 7px; }
+.nav-btn { width: 100%; border: none; background: transparent; color: var(--muted); padding: 13px 14px; border-radius: 10px; display: flex; align-items: center; gap: 13px; cursor: pointer; text-align: left; font-size: 14px; transition: .2s; }
+.nav-btn:hover { background: #102238; color: white; }
+.nav-btn.active { background: rgba(59,130,246,.16); color: #72aefc; border: 1px solid rgba(59,130,246,.22); }
+.nav-icon { width: 22px; text-align: center; font-size: 17px; }
+.sidebar-bottom { margin-top: auto; }
+.api-status { background: #0d1b2d; border: 1px solid var(--border); border-radius: 12px; padding: 13px; font-size: 12px; }
+.api-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--yellow); }
+.status-dot.online { background: var(--green); box-shadow: 0 0 10px rgba(34,197,94,.7); }
+.status-dot.offline { background: var(--red); }
+.main { margin-left: 250px; min-height: 100vh; }
+.topbar { height: 72px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: rgba(7,17,31,.92); position: sticky; top: 0; z-index: 900; backdrop-filter: blur(12px); }
+.top-title h1 { font-size: 20px; }
+.top-title p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.refresh-btn { border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 9px; padding: 9px 14px; cursor: pointer; }
+.refresh-btn:hover { border-color: var(--blue); }
+.content { padding: 28px; }
+.section { display: none; animation: fade .2s ease; }
+.section.active { display: block; }
+@keyframes fade { from { opacity: .2; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+.stat-label { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+.stat-value { font-size: 30px; font-weight: 800; }
+.stat-sub { margin-top: 6px; color: var(--muted); font-size: 11px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 22px; box-shadow: var(--shadow); margin-bottom: 20px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.card-header h2 { font-size: 17px; }
+.card-header p { color: var(--muted); font-size: 12px; }
+.risk-layout { display: grid; grid-template-columns: 300px 1fr; gap: 30px; align-items: center; }
+.risk-circle { width: 230px; height: 230px; border-radius: 50%; margin: auto; background: conic-gradient(var(--risk-color, var(--green)) var(--risk-progress, 0%), #17283b var(--risk-progress, 0%)); position: relative; display: flex; justify-content: center; align-items: center; transition: background .7s ease; box-shadow: 0 0 0 8px rgba(255,255,255,.015), 0 15px 40px rgba(0,0,0,.3); }
+.risk-circle::after { content: ""; position: absolute; width: 178px; height: 178px; background: var(--card); border-radius: 50%; }
+.risk-center { position: relative; z-index: 2; text-align: center; }
+.risk-number { font-size: 52px; line-height: 1; font-weight: 900; }
+.risk-outof { color: var(--muted); font-size: 11px; margin-top: 4px; }
+.risk-level { display: inline-block; margin-top: 10px; padding: 6px 13px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: .7px; }
+.risk-level.low { background: rgba(34,197,94,.15); color: #4ade80; }
+.risk-level.medium { background: rgba(245,158,11,.15); color: yellow; }
+.risk-level.high { background: rgba(249,115,22,.15); color: red; }
+.risk-info h3 { font-size: 24px; margin-bottom: 8px; }
+.risk-info p { color: var(--muted); line-height: 1.6; font-size: 13px; }
+.risk-scale { margin-top: 22px; }
+.scale-row { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; margin-bottom: 8px; }
+.scale-bar { height: 9px; border-radius: 20px; background: linear-gradient(to right, #22c55e 0%, #22c55e 30%, #f59e0b 30%, yellow 60%, yellow 60% , #ef4444 100%); }
+.upload-box { border: 2px dashed #29435e; border-radius: 15px; padding: 45px 20px; text-align: center; transition: .2s; }
+.upload-box.drag { border-color: var(--blue); background: rgba(59,130,246,.06); }
+.upload-icon { font-size: 42px; margin-bottom: 12px; }
+.upload-box h3 { margin-bottom: 7px; }
+.upload-box p { color: var(--muted); font-size: 13px; }
+.file-input { display: none; }
+.upload-btn { margin-top: 20px; background: var(--blue); border: none; color: white; padding: 12px 20px; border-radius: 9px; cursor: pointer; font-weight: 700; }
+.upload-btn:hover { background: #2563eb; }
+.selected-file { margin-top: 15px; color: var(--blue2); font-size: 13px; }
+.progress-container { display: none; margin-top: 20px; }
+.progress-track { height: 8px; background: #182a3d; border-radius: 20px; overflow: hidden; }
+.progress-fill { width: 0%; height: 100%; background: var(--blue); transition: width .3s; }
+.progress-text { display: flex; justify-content: space-between; margin-top: 7px; color: var(--muted); font-size: 11px; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; color: var(--muted); font-size: 11px; font-weight: 600; padding: 12px; border-bottom: 1px solid var(--border); }
+td { padding: 14px 12px; border-bottom: 1px solid rgba(28,51,77,.65); font-size: 13px; }
+tr:hover td { background: rgba(255,255,255,.015); }
+.contract-name { font-weight: 700; }
+.contract-id { color: var(--muted); font-size: 10px; margin-top: 4px; }
+.status { display: inline-block; padding: 5px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+.status.completed { background: rgba(34,197,94,.12); color: #4ade80; }
+.status.processing { background: rgba(59,130,246,.12); color: #60a5fa; }
+.status.failed { background: rgba(239,68,68,.12); color: #f87171; }
+.action-btn { border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 7px; padding: 7px 10px; cursor: pointer; margin-right: 4px; }
+.action-btn:hover { border-color: var(--blue); color: var(--blue2); }
+.delete-btn:hover { border-color: var(--red); color: #f87171; }
+.search-row { display: grid; grid-template-columns: 1fr 230px auto; gap: 10px; margin-bottom: 18px; }
+.search-input, .select-input { width: 100%; background: #091727; border: 1px solid var(--border); color: white; border-radius: 9px; padding: 12px 13px; outline: none; }
+.search-input:focus, .select-input:focus { border-color: var(--blue); }
+.clear-btn { background: #182a3d; border: 1px solid var(--border); color: var(--text); border-radius: 9px; padding: 0 15px; cursor: pointer; }
+.clause-result { border: 1px solid var(--border); border-radius: 11px; padding: 16px; margin-bottom: 10px; background: #0b1929; }
+.clause-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+.clause-type { color: #7db3ff; font-size: 12px; font-weight: 800; }
+.clause-contract { color: var(--muted); font-size: 10px; }
+.clause-text { color: #c4d1df; font-size: 12px; line-height: 1.6; }
+.results-header { display: flex; justify-content: space-between; align-items: center; }
+.back-btn { border: 1px solid var(--border); background: transparent; color: var(--text); padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.entity-card, .clause-card { background: #0b1929; border: 1px solid var(--border); border-radius: 11px; padding: 15px; margin-bottom: 10px; }
+.entity-name { font-size: 11px; color: var(--blue2); font-weight: 800; margin-bottom: 5px; }
+.entity-value { font-size: 13px; word-break: break-word; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 20px; background: #172b43; color: #9cc4f7; font-size: 10px; }
+.result-risk-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+.result-risk-card { background: #0b1929; border: 1px solid var(--border); border-radius: 11px; padding: 18px; }
+.result-risk-label { color: var(--muted); font-size: 11px; font-weight: 700; margin-bottom: 10px; }
+.result-risk-score { font-size: 32px; font-weight: 900; }
+.result-risk-score span { font-size: 12px; color: var(--muted); font-weight: 500; }
+.result-risk-bar { height: 7px; background: #182a3d; border-radius: 20px; margin-top: 13px; overflow: hidden; }
+.result-risk-fill { height: 100%; border-radius: 20px; transition: width .5s ease; }
+.result-risk-level-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.result-risk-description { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.entity-group { background: #0b1929; border: 1px solid var(--border); border-radius: 11px; padding: 15px; margin-bottom: 10px; }
+.entity-group-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.entity-group-name { color: var(--blue2); font-size: 11px; font-weight: 800; letter-spacing: .5px; }
+.entity-count { background: #172b43; color: #9cc4f7; padding: 3px 7px; border-radius: 20px; font-size: 9px; }
+.entity-values { display: flex; flex-direction: column; gap: 7px; }
+.entity-value-item { background: #102238; border: 1px solid rgba(28,51,77,.7); border-radius: 7px; padding: 9px 10px; color: #c4d1df; font-size: 12px; word-break: break-word; }
+.detected-clause { background: #0b1929; border: 1px solid var(--border); border-radius: 11px; padding: 16px; margin-bottom: 11px; }
+.detected-clause-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+.detected-clause-left { display: flex; align-items: center; gap: 9px; }
+.clause-number { width: 27px; height: 27px; border-radius: 7px; background: rgba(59,130,246,.13); color: var(--blue2); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; }
+.detected-clause-title { color: #7db3ff; font-size: 12px; font-weight: 800; }
+.detected-clause-type { color: var(--muted); font-size: 10px; margin-top: 3px; }
+.confidence-label { color: #9cc4f7; background: #172b43; border-radius: 20px; padding: 5px 8px; font-size: 10px; white-space: nowrap; }
+.actual-clause-label { color: var(--muted); font-size: 10px; margin-bottom: 6px; font-weight: 700; }
+.actual-clause-text { color: #c4d1df; font-size: 12px; line-height: 1.7; background: #091727; border: 1px solid rgba(28,51,77,.7); border-radius: 8px; padding: 11px; }
+.all-contracts-table { min-width: 650px; }
+.empty { text-align: center; padding: 35px 15px; color: var(--muted); font-size: 13px; }
+.error-box { padding: 14px; border-radius: 10px; background: rgba(239,68,68,.09); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; font-size: 12px; }
+.toast { position: fixed; right: 25px; bottom: 25px; min-width: 280px; max-width: 400px; padding: 14px 16px; border-radius: 10px; background: #102238; border: 1px solid var(--border); box-shadow: var(--shadow); z-index: 3000; display: none; font-size: 13px; }
+.toast.show { display: block; animation: toastIn .2s ease; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.mobile-menu { display: none; background: transparent; border: none; color: white; font-size: 22px; cursor: pointer; }
+@media(max-width: 1000px) { .stats { grid-template-columns: repeat(2, 1fr); } .risk-layout { grid-template-columns: 1fr; } .result-grid { grid-template-columns: 1fr; } .result-risk-summary { grid-template-columns: 1fr; } }
+@media(max-width: 700px) { .sidebar { transform: translateX(-100%); transition: .25s; } .sidebar.open { transform: translateX(0); } .main { margin-left: 0; } .mobile-menu { display: block; } .topbar { padding: 0 16px; } .content { padding: 16px; } .stats { grid-template-columns: 1fr; } .search-row { grid-template-columns: 1fr; } .clear-btn { padding: 11px; } .detected-clause-header { flex-direction: column; } }
 </style>
 </head>
-
 <body>
-
-<!-- ================= SIDEBAR ================= -->
-
 <aside class="sidebar" id="sidebar">
-
     <div class="logo">
         <div class="logo-icon">C</div>
         <div class="logo-text">Contract<span>IQ</span></div>
     </div>
-
     <nav class="nav">
-
-        <button class="nav-btn active" data-section="dashboard">
-            <span class="nav-icon">▦</span>
-            Dashboard
-        </button>
-
-        <button class="nav-btn" data-section="upload">
-            <span class="nav-icon">↑</span>
-            Upload Contract
-        </button>
-
-        <button class="nav-btn" data-section="contracts">
-            <span class="nav-icon">▤</span>
-            Contracts
-        </button>
-
-        <button class="nav-btn" data-section="search">
-            <span class="nav-icon">⌕</span>
-            Clause Search
-        </button>
-
-        <button class="nav-btn" data-section="analysis">
-            <span class="nav-icon">◉</span>
-            Clause Analysis
-        </button>
-
+        <button class="nav-btn active" data-section="dashboard"><span class="nav-icon">▦</span>Dashboard</button>
+        <button class="nav-btn" data-section="upload"><span class="nav-icon">↑</span>Upload Contract</button>
+        <button class="nav-btn" data-section="contracts"><span class="nav-icon">▤</span>Contracts</button>
+        <button class="nav-btn" data-section="search"><span class="nav-icon">⌕</span>Clause Search</button>
+        <button class="nav-btn" data-section="analysis"><span class="nav-icon">◉</span>Clause Analysis</button>
     </nav>
-
     <div class="sidebar-bottom">
         <div class="api-status">
-            <div class="api-row">
-                <span class="status-dot" id="apiDot"></span>
-                <strong id="apiText">Checking API...</strong>
-            </div>
-
-            <div style="color:var(--muted);">
-                FastAPI • Uvicorn
-            </div>
+            <div class="api-row"><span class="status-dot" id="apiDot"></span><strong id="apiText">Checking API...</strong></div>
+            <div style="color:var(--muted);">FastAPI • Uvicorn</div>
         </div>
     </div>
-
 </aside>
-
-
-<!-- ================= MAIN ================= -->
-
 <main class="main">
-
     <header class="topbar">
-
         <div style="display:flex;align-items:center;gap:12px;">
-
-            <button class="mobile-menu" id="mobileMenu">
-                ☰
-            </button>
-
+            <button class="mobile-menu" id="mobileMenu">☰</button>
             <div class="top-title">
-
-                <h1 id="pageTitle">
-                    Dashboard
-                </h1>
-
-                <p id="pageSubtitle">
-                    Contract intelligence overview
-                </p>
-
+                <h1 id="pageTitle">Dashboard</h1>
+                <p id="pageSubtitle">Contract intelligence overview</p>
             </div>
-
         </div>
-
-        <button
-            class="refresh-btn"
-            onclick="refreshCurrentPage()"
-        >
-            ↻ Refresh
-        </button>
-
+        <button class="refresh-btn" onclick="refreshCurrentPage()">↻ Refresh</button>
     </header>
-
-
     <div class="content">
-
-        <!-- ================= DASHBOARD ================= -->
-
+        <!-- DASHBOARD -->
         <section class="section active" id="dashboard">
-
             <div class="stats">
-
-                <div class="stat-card">
-                    <div class="stat-label">
-                        TOTAL CONTRACTS
-                    </div>
-
-                    <div
-                        class="stat-value"
-                        id="totalContracts"
-                    >
-                        0
-                    </div>
-
-                    <div class="stat-sub">
-                        Uploaded contracts
-                    </div>
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        COMPLETED
-                    </div>
-
-                    <div
-                        class="stat-value"
-                        id="completedContracts"
-                    >
-                        0
-                    </div>
-
-                    <div class="stat-sub">
-                        Successfully analyzed
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        CLAUSES
-                    </div>
-
-                    <div
-                        class="stat-value"
-                        id="totalClauses"
-                    >
-                        0
-                    </div>
-
-                    <div class="stat-sub">
-                        Detected clauses
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        AVERAGE RISK
-                    </div>
-
-                    <div
-                        class="stat-value"
-                        id="averageRisk"
-                    >
-                        0
-                    </div>
-
-                    <div class="stat-sub">
-                        Overall risk score
-                    </div>
-
-                </div>
-
+                <div class="stat-card"><div class="stat-label">TOTAL CONTRACTS</div><div class="stat-value" id="totalContracts">0</div><div class="stat-sub">Uploaded contracts</div></div>
+                <div class="stat-card"><div class="stat-label">COMPLETED</div><div class="stat-value" id="completedContracts">0</div><div class="stat-sub">Successfully analyzed</div></div>
+                <div class="stat-card"><div class="stat-label">CLAUSES</div><div class="stat-value" id="totalClauses">0</div><div class="stat-sub">Detected clauses</div></div>
+                <div class="stat-card"><div class="stat-label">AVERAGE RISK</div><div class="stat-value" id="averageRisk">0</div><div class="stat-sub">Overall risk score</div></div>
             </div>
-
-
             <div class="card">
-
-                <div class="card-header">
-
-                    <div>
-
-                        <h2>
-                            Overall Contract Risk
-                        </h2>
-
-                        <p>
-                            Average risk across analyzed contracts
-                        </p>
-
-                    </div>
-
-                </div>
-
-
+                <div class="card-header"><div><h2>Overall Contract Risk</h2><p>Average risk across analyzed contracts</p></div></div>
                 <div class="risk-layout">
-
                     <div>
-
-                        <div
-                            class="risk-circle"
-                            id="dashboardRiskCircle"
-                            style="--risk-progress:0%;--risk-color:#22c55e;"
-                        >
-
+                        <div class="risk-circle" id="dashboardRiskCircle" style="--risk-progress:0%;--risk-color:#22c55e;">
                             <div class="risk-center">
-
-                                <div
-                                    class="risk-number"
-                                    id="dashboardRiskScore"
-                                >
-                                    0
-                                </div>
-
-                                <div class="risk-outof">
-                                    out of 100
-                                </div>
-
-                                <div
-                                    class="risk-level low"
-                                    id="dashboardRiskLevel"
-                                >
-                                    LOW
-                                </div>
-
+                                <div class="risk-number" id="dashboardRiskScore">0</div>
+                                <div class="risk-outof">out of 100</div>
+                                <div class="risk-level low" id="dashboardRiskLevel">LOW</div>
                             </div>
-
                         </div>
-
                     </div>
-
-
                     <div class="risk-info">
-
-                        <h3 id="dashboardRiskTitle">
-                            Low Risk
-                        </h3>
-
-                        <p id="dashboardRiskDescription">
-                            No major risk indicators detected.
-                        </p>
-
-
+                        <h3 id="dashboardRiskTitle">Low Risk</h3>
+                        <p id="dashboardRiskDescription">No major risk indicators detected.</p>
                         <div class="risk-scale">
-
                             <div class="scale-row">
-
-                                <span>LOW</span>
-                                <span>MEDIUM</span>
-                                <span>HIGH</span>
-                                <span>CRITICAL</span>
-
+                                <span>0</span><span>30</span><span>60</span><span>100</span>
                             </div>
-
                             <div class="scale-bar"></div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
-
             <div class="card">
-
-                <div class="card-header">
-
-                    <div>
-
-                        <h2>
-                            Recent Contracts
-                        </h2>
-
-                        <p>
-                            Your latest uploaded contracts
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div id="recentContracts">
-
-                    <div class="empty">
-                        Loading contracts...
-                    </div>
-
-                </div>
-
+                <div class="card-header"><div><h2>Recent Contracts</h2><p>Your latest uploaded contracts</p></div></div>
+                <div id="recentContracts"><div class="empty">Loading contracts...</div></div>
             </div>
-
         </section>
-
-
-        <!-- ================= UPLOAD ================= -->
-
+        <!-- UPLOAD -->
         <section class="section" id="upload">
-
             <div class="card">
-
-                <div class="card-header">
-
-                    <div>
-
-                        <h2>
-                            Upload Contract
-                        </h2>
-
-                        <p>
-                            Upload a PDF contract for automated analysis
-                        </p>
-
-                    </div>
-
+                <div class="card-header"><div><h2>Upload Contract</h2><p>Upload a PDF contract for automated analysis</p></div></div>
+                <div class="upload-box" id="uploadBox">
+                    <div class="upload-icon">📄</div>
+                    <h3>Drop your contract here</h3>
+                    <p>Supported format: PDF</p>
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf,application/pdf">
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose PDF</button>
+                    <div class="selected-file" id="selectedFile"></div>
                 </div>
-
-
-                <div
-                    class="upload-box"
-                    id="uploadBox"
-                >
-
-                    <div class="upload-icon">
-                        📄
-                    </div>
-
-                    <h3>
-                        Drop your contract here
-                    </h3>
-
-                    <p>
-                        Supported format: PDF
-                    </p>
-
-
-                    <input
-                        type="file"
-                        id="fileInput"
-                        class="file-input"
-                        accept=".pdf,application/pdf"
-                    >
-
-
-                    <button
-                        class="upload-btn"
-                        onclick="document.getElementById('fileInput').click()"
-                    >
-                        Choose PDF
-                    </button>
-
-
-                    <div
-                        class="selected-file"
-                        id="selectedFile"
-                    ></div>
-
+                <div class="progress-container" id="uploadProgress">
+                    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="progress-text"><span id="progressStatus">Uploading...</span><span id="progressPercent">0%</span></div>
                 </div>
-
-
-                <div
-                    class="progress-container"
-                    id="uploadProgress"
-                >
-
-                    <div class="progress-track">
-
-                        <div
-                            class="progress-fill"
-                            id="progressFill"
-                        ></div>
-
-                    </div>
-
-
-                    <div class="progress-text">
-
-                        <span id="progressStatus">
-                            Uploading...
-                        </span>
-
-                        <span id="progressPercent">
-                            0%
-                        </span>
-
-                    </div>
-
-                </div>
-
             </div>
-
         </section>
-
-
-        <!-- ================= CONTRACTS ================= -->
-
+        <!-- CONTRACTS -->
         <section class="section" id="contracts">
-
             <div class="card">
-
-                <div class="card-header">
-
-                    <div>
-
-                        <h2>
-                            Contracts
-                        </h2>
-
-                        <p>
-                            Manage and analyze uploaded contracts
-                        </p>
-
-                    </div>
-
-                </div>
-
-
+                <div class="card-header"><div><h2>Contracts</h2><p>Manage and analyze uploaded contracts</p></div></div>
                 <div class="table-wrap">
-
                     <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    CONTRACT
-                                </th>
-
-                                <th>
-                                    STATUS
-                                </th>
-
-                                <th>
-                                    RISK
-                                </th>
-
-                                <th>
-                                    CLAUSES
-                                </th>
-
-                                <th>
-                                    ACTIONS
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="contractsTable">
-
-                            <tr>
-
-                                <td colspan="5">
-
-                                    <div class="empty">
-                                        Loading contracts...
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
+                        <thead><tr><th>CONTRACT</th><th>STATUS</th><th>RISK</th><th>CLAUSES</th><th>ACTIONS</th></tr></thead>
+                        <tbody id="contractsTable"><tr><td colspan="5"><div class="empty">Loading contracts...</div></td></tr></tbody>
                     </table>
-
                 </div>
-
             </div>
-
         </section>
-
-
-        <!-- ================= CLAUSE SEARCH ================= -->
-
+        <!-- SEARCH -->
         <section class="section" id="search">
-
             <div class="card">
-
                 <div class="card-header">
-
-                    <div>
-
-                        <h2>
-                            Clause Search
-                        </h2>
-
-                        <p>
-                            Search detected clauses from analyzed contracts
-                        </p>
-
-                    </div>
-
-
-                    <span
-                        class="badge"
-                        id="clauseSearchCount"
-                    >
-                        0 results
-                    </span>
-
+                    <div><h2>Clause Search</h2><p>Search detected clauses from analyzed contracts</p></div>
+                    <span class="badge" id="clauseSearchCount">0 results</span>
                 </div>
-
-
                 <div class="search-row">
-
-                    <input
-                        class="search-input"
-                        id="clauseSearch"
-                        placeholder="Search clause text, clause type..."
-                        oninput="searchClauses()"
-                    >
-
-
-                    <select
-                        class="select-input"
-                        id="clauseContractFilter"
-                        onchange="searchClauses()"
-                    >
-
-                        <option value="">
-                            All Contracts
-                        </option>
-
-                    </select>
-
-
-                    <button
-                        class="clear-btn"
-                        onclick="clearClauseSearch()"
-                    >
-                        Clear
-                    </button>
-
+                    <input class="search-input" id="clauseSearch" placeholder="Search clause text, clause type..." oninput="searchClauses()">
+                    <select class="select-input" id="clauseContractFilter" onchange="searchClauses()"><option value="">All Contracts</option></select>
+                    <button class="clear-btn" onclick="clearClauseSearch()">Clear</button>
                 </div>
-
-
-                <div id="clauseSearchResults">
-
-                    <div class="empty">
-                        Loading clauses...
-                    </div>
-
-                </div>
-
+                <div id="clauseSearchResults"><div class="empty">Loading clauses...</div></div>
             </div>
-
         </section>
-
-
-        <!-- ================= ANALYSIS ================= -->
-
+        <!-- ANALYSIS -->
         <section class="section" id="analysis">
-
             <div class="card">
-
                 <div class="results-header">
-
-                    <div>
-
-                        <h2 id="analysisTitle">
-                            Clause Analysis
-                        </h2>
-
-                        <p
-                            id="analysisSubtitle"
-                            style="color:var(--muted);font-size:12px;margin-top:5px;"
-                        >
-                            Select a completed contract from Contracts.
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        class="back-btn"
-                        onclick="showSection('contracts')"
-                    >
-                        ← Contracts
-                    </button>
-
+                    <div><h2 id="analysisTitle">Clause Analysis</h2><p id="analysisSubtitle" style="color:var(--muted);font-size:12px;margin-top:5px;">Select a completed contract from Contracts.</p></div>
+                    <button class="back-btn" onclick="showSection('contracts')">← Contracts</button>
                 </div>
-
             </div>
-
-
-            <div id="analysisContent">
-
-                <div class="empty">
-                    Select a contract to view detailed analysis.
-                </div>
-
-            </div>
-
+            <div id="analysisContent"><div class="empty">Select a contract to view detailed analysis.</div></div>
         </section>
-
     </div>
-
 </main>
-
-
-<div
-    class="toast"
-    id="toast"
-></div>
-
+<div class="toast" id="toast"></div>
 
 <script>
-
-/* =========================================================
-   CONFIGURATION
-========================================================= */
-
-const API_BASE = "http://127.0.0.1:8000";
-
-let contracts = [];
-let clauseResults = [];
-let currentContract = null;
-let currentContractId = null;
-let pollingTimers = {};
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function escapeHtml(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        return "";
-    }
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-function escapeJs(value) {
-
-    return String(value)
-        .replace(/\\/g, "\\\\")
-        .replace(/'/g, "\\'");
-}
-
-
-function showToast(
-    message,
-    duration = 3500
-) {
-
-    const toast =
-        document.getElementById("toast");
-
-    toast.textContent = message;
-
-    toast.classList.add("show");
-
-    setTimeout(() => {
-
-        toast.classList.remove("show");
-
-    }, duration);
-}
-
-
-function normalizeStatus(contract) {
-
-    const status =
-        contract?.status ||
-        contract?.state ||
-        contract?.processing_status ||
-        "unknown";
-
-    return String(status).toLowerCase();
-}
-
-
-function getContractId(contract) {
-
-    if (!contract) {
-        return "";
-    }
-
-    return (
-        contract.id ??
-        contract.contract_id ??
-        contract.uuid ??
-        contract._id ??
-        ""
-    );
-}
-
-
-function getContractName(contract) {
-
-    if (!contract) {
-        return "Unknown Contract";
-    }
-
-    return (
-        contract.filename ||
-        contract.file_name ||
-        contract.name ||
-        contract.title ||
-        `Contract ${getContractId(contract)}`
-    );
-}
-
-
-/* =========================================================
-   DATE / TIME
-========================================================= */
-
-function formatDateTime(value) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-        return "N/A";
-    }
-
-    const date =
-        new Date(value);
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-        return String(value);
-    }
-
-    return date.toLocaleString(
-        undefined,
-        {
-            dateStyle: "medium",
-            timeStyle: "short"
-        }
-    );
-}
-
-
-function getUploadedTime(data) {
-
-    return (
-        data?.uploaded_at ??
-        data?.created_at ??
-        data?.upload_time ??
-        data?.uploaded_time ??
-        data?.timestamp ??
-        data?.created ??
-        null
-    );
-}
-
-
-/* =========================================================
-   RISK ENGINE
-========================================================= */
-
+const API_BASE = "http://127.0.0.1:8000"; 
+let contracts = [], clauseResults = [], currentContract = null, currentContractId = null, pollingTimers = {}; 
+ 
+function escapeHtml(value) { 
+    if (value === null || value === undefined) return ""; 
+    return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); 
+} 
+ 
+function escapeJs(value) { 
+    return String(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'"); 
+} 
+ 
+function showToast(message, duration = 3500) { 
+    const toast = document.getElementById("toast"); 
+    toast.textContent = message; 
+    toast.classList.add("show"); 
+    setTimeout(() => toast.classList.remove("show"), duration); 
+} 
+ 
+function normalizeStatus(contract) { 
+    return String(contract?.status || contract?.state || contract?.processing_status || "unknown").toLowerCase(); 
+} 
+ 
+function getContractId(contract) { 
+    if (!contract) return ""; 
+    return contract.id ?? contract.contract_id ?? contract.uuid ?? contract._id ?? ""; 
+} 
+ 
+function getContractName(contract) { 
+    if (!contract) return "Unknown Contract"; 
+    return contract.filename || contract.file_name || contract.name || contract.title || `Contract ${getContractId(contract)}`; 
+} 
+ 
+function formatDateTime(value) { 
+    if (value === null || value === undefined || value === "") return "N/A"; 
+    const date = new Date(value); 
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }); 
+} 
+ 
+function getUploadedTime(data) { 
+    return data?.uploaded_at ?? data?.created_at ?? data?.upload_time ?? data?.uploaded_time ?? data?.timestamp ?? data?.created ?? null; 
+} 
+ 
 function getRiskInfo(score) {
-
-    let value =
-        Number(score);
-
-    if (!Number.isFinite(value)) {
-        value = 0;
-    }
-
-    value =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                value
-            )
-        );
-
-    let level;
-    let color;
-    let description;
-    let title;
-    let className;
-
-
-    if (value < 30) {
-
-        level = "LOW";
-        color = "#22c55e";
-        className = "low";
-        title = "Low Risk";
-
-        description =
-            "No major risk indicators detected. The contract appears to have relatively low risk.";
-
-    }
-
-    else if (value < 60) {
-
-        level = "MEDIUM";
-        color = "#f59e0b";
-        className = "medium";
-        title = "Medium Risk";
-
-        description =
-            "Moderate risk detected. Review the identified clauses before approving the contract.";
-
-    }
-
-    else if (value < 80) {
-
-        level = "HIGH";
-        color = "#f97316";
-        className = "high";
-        title = "High Risk";
-
-        description =
-            "Several potentially risky provisions were detected. Detailed legal review is recommended.";
-
-    }
-
-    else {
-
-        level = "CRITICAL";
-        color = "#ef4444";
-        className = "critical";
-        title = "Critical Risk";
-
-        description =
-            "Critical risk indicators were detected. Immediate review of the contract is recommended.";
-    }
-
-
-    return {
-
-        score: Math.round(value),
-
-        level,
-
-        color,
-
-        className,
-
-        title,
-
-        description
-
-    };
-}
-
-
-function updateRiskCircle(
-    circleId,
-    scoreId,
-    levelId,
-    titleId,
-    descriptionId,
-    score
-) {
-
-    const info =
-        getRiskInfo(score);
-
-    const circle =
-        document.getElementById(
-            circleId
-        );
-
-    const scoreElement =
-        document.getElementById(
-            scoreId
-        );
-
-    const levelElement =
-        document.getElementById(
-            levelId
-        );
-
-    const titleElement =
-        document.getElementById(
-            titleId
-        );
-
-    const descriptionElement =
-        document.getElementById(
-            descriptionId
-        );
-
-
-    if (scoreElement) {
-
-        scoreElement.textContent =
-            info.score;
-    }
-
-
-    if (circle) {
-
-        circle.style.setProperty(
-            "--risk-progress",
-            `${info.score}%`
-        );
-
-        circle.style.setProperty(
-            "--risk-color",
-            info.color
-        );
-    }
-
-
-    if (levelElement) {
-
-        levelElement.textContent =
-            info.level;
-
-        levelElement.className =
-            `risk-level ${info.className}`;
-    }
-
-
-    if (titleElement) {
-
-        titleElement.textContent =
-            info.title;
-    }
-
-
-    if (descriptionElement) {
-
-        descriptionElement.textContent =
-            info.description;
-    }
-}
-
-
-/* =========================================================
-   CONFIDENCE
-========================================================= */
-
-function formatConfidence(value) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-        return "N/A";
-    }
-
-    let number =
-        Number(value);
-
-    if (!Number.isFinite(number)) {
-        return escapeHtml(value);
-    }
-
-    if (number <= 1) {
-        number *= 100;
-    }
-
-    number =
-        Math.max(
-            0,
-            Math.min(
-                100,
-                number
-            )
-        );
-
-    return `${number.toFixed(1)}%`;
-}
-
-
-/* =========================================================
-   API HEALTH
-========================================================= */
-
-async function checkApiHealth() {
-
-    const dot =
-        document.getElementById(
-            "apiDot"
-        );
-
-    const text =
-        document.getElementById(
-            "apiText"
-        );
-
-
-    try {
-
-        const response =
-            await fetch(
-                `${API_BASE}/health`,
-                {
-                    method: "GET",
-                    cache: "no-store"
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                `HTTP ${response.status}`
-            );
-        }
-
-
-        dot.className =
-            "status-dot online";
-
-        text.textContent =
-            "API Online";
-
-
-    } catch (error) {
-
-        console.error(
-            "API health error:",
-            error
-        );
-
-        dot.className =
-            "status-dot offline";
-
-        text.textContent =
-            "API Offline";
-    }
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-const pageInformation = {
-
-    dashboard: [
-        "Dashboard",
-        "Contract intelligence overview"
-    ],
-
-    upload: [
-        "Upload Contract",
-        "Upload a PDF for automated analysis"
-    ],
-
-    contracts: [
-        "Contracts",
-        "Manage uploaded contracts"
-    ],
-
-    search: [
-        "Clause Search",
-        "Search analyzed contract clauses"
-    ],
-
-    analysis: [
-        "Clause Analysis",
-        "Detailed contract analysis"
-    ]
-
-};
-
-
-function showSection(sectionId) {
-
-    document
-        .querySelectorAll(".section")
-        .forEach(section => {
-
-            section.classList.remove(
-                "active"
-            );
-
-        });
-
-
-    const section =
-        document.getElementById(
-            sectionId
-        );
-
-
-    if (!section) return;
-
-
-    section.classList.add(
-        "active"
-    );
-
-
-    document
-        .querySelectorAll(".nav-btn")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.section ===
-                sectionId
-            );
-
-        });
-
-
-    const info =
-        pageInformation[sectionId];
-
-
-    if (info) {
-
-        document.getElementById(
-            "pageTitle"
-        ).textContent =
-            info[0];
-
-
-        document.getElementById(
-            "pageSubtitle"
-        ).textContent =
-            info[1];
-    }
-
-
-    document.getElementById(
-        "sidebar"
-    ).classList.remove("open");
-
-
-    if (sectionId === "dashboard") {
-        loadDashboard();
-    }
-
-
-    if (sectionId === "contracts") {
-        loadContracts();
-    }
-
-
-    if (sectionId === "search") {
-        loadClauseSearchData();
-    }
-}
-
-
-document
-    .querySelectorAll(".nav-btn")
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                showSection(
-                    button.dataset.section
-                );
-
-            }
-        );
-
-    });
-
-
-document
-    .getElementById("mobileMenu")
-    .addEventListener(
-        "click",
-        () => {
-
-            document
-                .getElementById("sidebar")
-                .classList.toggle("open");
-
-        }
-    );
-
-
-/* =========================================================
-   CONTRACTS
-========================================================= */
-
-async function loadContracts() {
-
-    const table =
-        document.getElementById(
-            "contractsTable"
-        );
-
-
-    try {
-
-        const response =
-            await fetch(
-                `${API_BASE}/v1/contracts`,
-                {
-                    cache: "no-store"
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                `HTTP ${response.status}`
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        contracts =
-            Array.isArray(data)
-                ? data
-                : (
-                    data.contracts ||
-                    data.items ||
-                    data.results ||
-                    []
-                );
-
-
-        renderContracts();
-
-        updateDashboardStats();
-
-
-    } catch (error) {
-
-        console.error(
-            "Contracts error:",
-            error
-        );
-
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td colspan="5">
-
-                    <div class="error-box">
-
-                        Unable to load contracts.
-
-                        <br><br>
-
-                        Make sure FastAPI is running at
-
-                        <strong>
-                            ${escapeHtml(API_BASE)}
-                        </strong>
-
-                        <br><br>
-
-                        Error:
-                        ${escapeHtml(error.message)}
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-        `;
-    }
-}
-
-
-function isCompletedContract(contract) {
-
-    const status =
-        normalizeStatus(contract);
-
-    return (
-        status.includes("complete") ||
-        status === "done" ||
-        status === "success"
-    );
-}
-
-
-function getContractRisk(contract) {
-
-    return (
-        contract?.risk_score ??
-        contract?.riskScore ??
-        contract?.risk?.score ??
-        contract?.risk?.risk_score ??
-        (
-            typeof contract?.risk === "number"
-                ? contract.risk
-                : 0
-        )
-    );
-}
-
-
-function getContractClauseCount(contract) {
-
-    return Number(
-        contract?.clause_count ??
-        contract?.clauses_count ??
-        contract?.total_clauses ??
-        (
-            Array.isArray(contract?.clauses)
-                ? contract.clauses.length
-                : 0
-        )
-    ) || 0;
-}
-
-
-function renderContracts() {
-
-    const table =
-        document.getElementById(
-            "contractsTable"
-        );
-
-
-    if (!contracts.length) {
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td colspan="5">
-
-                    <div class="empty">
-                        No contracts uploaded yet.
-                    </div>
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-    }
-
-
-    table.innerHTML =
-        contracts
-            .map(contract => {
-
-                const id =
-                    getContractId(contract);
-
-                const name =
-                    getContractName(contract);
-
-                const status =
-                    normalizeStatus(contract);
-
-                const score =
-                    getContractRisk(contract);
-
-                const info =
-                    getRiskInfo(score);
-
-                const clauses =
-                    getContractClauseCount(
-                        contract
-                    );
-
-
-                let statusClass =
-                    "processing";
-
-
-                if (
-                    status.includes("complete") ||
-                    status === "done" ||
-                    status === "success"
-                ) {
-
-                    statusClass =
-                        "completed";
-                }
-
-
-                if (
-                    status.includes("fail") ||
-                    status.includes("error")
-                ) {
-
-                    statusClass =
-                        "failed";
-                }
-
-
-                return `
-
-                    <tr>
-
-                        <td>
-
-                            <div class="contract-name">
-                                ${escapeHtml(name)}
-                            </div>
-
-                            <div class="contract-id">
-                                ID:
-                                ${escapeHtml(id)}
-                            </div>
-
-                        </td>
-
-
-                        <td>
-
-                            <span
-                                class="status ${statusClass}"
-                            >
-                                ${escapeHtml(status)}
-                            </span>
-
-                        </td>
-
-
-                        <td>
-
-                            <span
-                                class="risk-level ${info.className}"
-                            >
-                                ${info.score}
-                                •
-                                ${info.level}
-                            </span>
-
-                        </td>
-
-
-                        <td>
-                            ${clauses}
-                        </td>
-
-
-                        <td>
-
-                            <button
-                                class="action-btn"
-                                onclick="viewContract('${escapeJs(id)}')"
-                            >
-                                View
-                            </button>
-
-
-                            <button
-                                class="action-btn delete-btn"
-                                onclick="deleteContract('${escapeJs(id)}')"
-                            >
-                                Delete
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            })
-            .join("");
-}
-
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-function updateDashboardStats() {
-
-    const total =
-        contracts.length;
-
-
-    const completed =
-        contracts.filter(
-            isCompletedContract
-        );
-
-
-    let riskScores = [];
-
-    let clauseCount = 0;
-
-
-    completed.forEach(
-        contract => {
-
-            const score =
-                getContractRisk(
-                    contract
-                );
-
-
-            if (
-                score !== undefined &&
-                score !== null
-            ) {
-
-                const number =
-                    Number(score);
-
-                if (
-                    Number.isFinite(number)
-                ) {
-
-                    riskScores.push(
-                        number
-                    );
-                }
-            }
-
-
-            clauseCount +=
-                getContractClauseCount(
-                    contract
-                );
-
-        }
-    );
-
-
-    const average =
-        riskScores.length
-            ? Math.round(
-                riskScores.reduce(
-                    (a, b) => a + b,
-                    0
-                ) /
-                riskScores.length
-            )
-            : 0;
-
-
-    document.getElementById(
-        "totalContracts"
-    ).textContent =
-        total;
-
-
-    document.getElementById(
-        "completedContracts"
-    ).textContent =
-        completed.length;
-
-
-    document.getElementById(
-        "totalClauses"
-    ).textContent =
-        clauseCount;
-
-
-    document.getElementById(
-        "averageRisk"
-    ).textContent =
-        average;
-
-
-    updateRiskCircle(
-        "dashboardRiskCircle",
-        "dashboardRiskScore",
-        "dashboardRiskLevel",
-        "dashboardRiskTitle",
-        "dashboardRiskDescription",
-        average
-    );
-
-
-    renderRecentContracts(
-        completed
-    );
-}
-
-
-function renderRecentContracts(
-    list
-) {
-
-    const container =
-        document.getElementById(
-            "recentContracts"
-        );
-
-
-    if (!list.length) {
-
-        container.innerHTML = `
-
-            <div class="empty">
-                No completed contracts available.
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    const recent =
-        [...list]
-            .slice(-5)
-            .reverse();
-
-
-    container.innerHTML =
-        recent
-            .map(contract => {
-
-                const name =
-                    getContractName(
-                        contract
-                    );
-
-
-                const score =
-                    getContractRisk(
-                        contract
-                    );
-
-
-                const info =
-                    getRiskInfo(
-                        score
-                    );
-
-
-                return `
-
-                    <div
-                        class="clause-result"
-                        style="display:flex;justify-content:space-between;align-items:center;"
-                    >
-
-                        <div>
-
-                            <div class="contract-name">
-                                ${escapeHtml(name)}
-                            </div>
-
-                            <div class="contract-id">
-                                Completed and analyzed
-                            </div>
-
-                        </div>
-
-
-                        <span
-                            class="risk-level ${info.className}"
-                        >
-                            ${info.score}
-                            •
-                            ${info.level}
-                        </span>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
-}
-
-
-async function loadDashboard() {
-
-    await loadContracts();
-
-}
-
-
-/* =========================================================
-   UPLOAD
-========================================================= */
-
-const fileInput =
-    document.getElementById(
-        "fileInput"
-    );
-
-const uploadBox =
-    document.getElementById(
-        "uploadBox"
-    );
-
-
-fileInput.addEventListener(
-    "change",
-    () => {
-
-        const file =
-            fileInput.files[0];
-
-
-        if (!file) return;
-
-
-        if (
-            file.type !== "application/pdf" &&
-            !file.name
-                .toLowerCase()
-                .endsWith(".pdf")
-        ) {
-
-            showToast(
-                "Please select a PDF file."
-            );
-
-
-            fileInput.value = "";
-
-            return;
-        }
-
-
-        document.getElementById(
-            "selectedFile"
-        ).textContent =
-            `Selected: ${file.name}`;
-
-
-        uploadContract(file);
-
-    }
-);
-
-
-/* Drag and drop */
-
-uploadBox.addEventListener(
-    "dragover",
-    event => {
-
-        event.preventDefault();
-
-        uploadBox.classList.add(
-            "drag"
-        );
-
-    }
-);
-
-
-uploadBox.addEventListener(
-    "dragleave",
-    () => {
-
-        uploadBox.classList.remove(
-            "drag"
-        );
-
-    }
-);
-
-
-uploadBox.addEventListener(
-    "drop",
-    event => {
-
-        event.preventDefault();
-
-        uploadBox.classList.remove(
-            "drag"
-        );
-
-
-        const file =
-            event.dataTransfer.files[0];
-
-
-        if (!file) return;
-
-
-        if (
-            file.type !== "application/pdf" &&
-            !file.name
-                .toLowerCase()
-                .endsWith(".pdf")
-        ) {
-
-            showToast(
-                "Only PDF files are supported."
-            );
-
-            return;
-        }
-
-
-        fileInput.files =
-            event.dataTransfer.files;
-
-
-        document.getElementById(
-            "selectedFile"
-        ).textContent =
-            `Selected: ${file.name}`;
-
-
-        uploadContract(file);
-
-    }
-);
-
-
-async function uploadContract(file) {
-
-    const progressContainer =
-        document.getElementById(
-            "uploadProgress"
-        );
-
-
-    const progressFill =
-        document.getElementById(
-            "progressFill"
-        );
-
-
-    const progressStatus =
-        document.getElementById(
-            "progressStatus"
-        );
-
-
-    const progressPercent =
-        document.getElementById(
-            "progressPercent"
-        );
-
-
-    progressContainer.style.display =
-        "block";
-
-
-    progressFill.style.width =
-        "10%";
-
-
-    progressPercent.textContent =
-        "10%";
-
-
-    progressStatus.textContent =
-        "Uploading...";
-
-
-    try {
-
-        const formData =
-            new FormData();
-
-
-        formData.append(
-            "file",
-            file
-        );
-
-
-        const response =
-            await fetch(
-                `${API_BASE}/v1/contracts/upload`,
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
-
-
-        if (!response.ok) {
-
-            let message =
-                `HTTP ${response.status}`;
-
-
-            try {
-
-                const errorData =
-                    await response.json();
-
-
-                message =
-                    errorData.detail ||
-                    errorData.message ||
-                    message;
-
-            } catch (_) {}
-
-
-            throw new Error(
-                message
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        const contractId =
-            data.id ??
-            data.contract_id ??
-            data.uuid ??
-            data.contract?.id;
-
-
-        progressFill.style.width =
-            "40%";
-
-
-        progressPercent.textContent =
-            "40%";
-
-
-        progressStatus.textContent =
-            "Processing contract...";
-
-
-        showToast(
-            "Contract uploaded successfully."
-        );
-
-
-        if (contractId) {
-
-            startContractPolling(
-                contractId
-            );
-
-        } else {
-
-            await loadContracts();
-
-
-            progressFill.style.width =
-                "100%";
-
-
-            progressPercent.textContent =
-                "100%";
-
-
-            progressStatus.textContent =
-                "Upload complete";
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Upload error:",
-            error
-        );
-
-
-        progressFill.style.width =
-            "0%";
-
-
-        progressPercent.textContent =
-            "0%";
-
-
-        progressStatus.textContent =
-            "Upload failed";
-
-
-        showToast(
-            `Upload failed: ${error.message}`,
-            6000
-        );
-    }
-}
-
-
-/* =========================================================
-   POLLING
-========================================================= */
-
-function startContractPolling(
-    contractId
-) {
-
-    if (
-        pollingTimers[contractId]
-    ) {
-
-        clearInterval(
-            pollingTimers[contractId]
-        );
-    }
-
-
-    let attempts = 0;
-
-    const maxAttempts = 120;
-
-
-    pollingTimers[contractId] =
-        setInterval(
-            async () => {
-
-                attempts++;
-
-
-                try {
-
-                    const response =
-                        await fetch(
-                            `${API_BASE}/v1/contracts/${encodeURIComponent(contractId)}/status`,
-                            {
-                                cache: "no-store"
-                            }
-                        );
-
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            `HTTP ${response.status}`
-                        );
-                    }
-
-
-                    const data =
-                        await response.json();
-
-
-                    const status =
-                        String(
-                            data.status ??
-                            data.state ??
-                            data.processing_status ??
-                            ""
-                        ).toLowerCase();
-
-
-                    const progress =
-                        document.getElementById(
-                            "progressFill"
-                        );
-
-
-                    const percent =
-                        document.getElementById(
-                            "progressPercent"
-                        );
-
-
-                    const statusText =
-                        document.getElementById(
-                            "progressStatus"
-                        );
-
-
-                    if (
-                        status.includes("complete") ||
-                        status === "done" ||
-                        status === "success"
-                    ) {
-
-                        progress.style.width =
-                            "100%";
-
-
-                        percent.textContent =
-                            "100%";
-
-
-                        statusText.textContent =
-                            "Analysis complete";
-
-
-                        clearInterval(
-                            pollingTimers[contractId]
-                        );
-
-
-                        delete pollingTimers[
-                            contractId
-                        ];
-
-
-                        await loadContracts();
-
-
-                        showToast(
-                            "Contract analysis completed."
-                        );
-
-
-                        setTimeout(
-                            () => {
-
-                                viewContract(
-                                    contractId
-                                );
-
-                            },
-                            500
-                        );
-
-
-                    } else if (
-                        status.includes("fail") ||
-                        status.includes("error")
-                    ) {
-
-                        clearInterval(
-                            pollingTimers[contractId]
-                        );
-
-
-                        delete pollingTimers[
-                            contractId
-                        ];
-
-
-                        statusText.textContent =
-                            "Analysis failed";
-
-
-                        showToast(
-                            "Contract analysis failed."
-                        );
-
-
-                    } else {
-
-                        const estimated =
-                            Math.min(
-                                90,
-                                40 + attempts
-                            );
-
-
-                        progress.style.width =
-                            `${estimated}%`;
-
-
-                        percent.textContent =
-                            `${estimated}%`;
-
-
-                        statusText.textContent =
-                            data.message ||
-                            "Analyzing contract...";
-                    }
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Polling error:",
-                        error
-                    );
-                }
-
-
-                if (
-                    attempts >= maxAttempts
-                ) {
-
-                    clearInterval(
-                        pollingTimers[contractId]
-                    );
-
-
-                    delete pollingTimers[
-                        contractId
-                    ];
-
-
-                    showToast(
-                        "Analysis is taking longer than expected. Check Contracts for the latest status."
-                    );
-
-
-                    await loadContracts();
-                }
-
-            },
-            2500
-        );
-}
-
-
-/* =========================================================
-   RESULT DATA HELPERS
-========================================================= */
-
-function getResultClauses(data) {
-
-    const clauses =
-        data?.clauses ??
-        data?.detected_clauses ??
-        data?.clause_results ??
-        data?.results ??
-        data?.analysis?.clauses ??
-        [];
-
-
-    return Array.isArray(clauses)
-        ? clauses
-        : [];
-}
-
-
-function getResultEntities(data) {
-
-    return (
-        data?.entities ??
-        data?.extracted_entities ??
-        data?.named_entities ??
-        data?.analysis?.entities ??
-        []
-    );
-}
-
-
-function getClauseType(clause) {
-
-    return (
-        clause?.clause_type ??
-        clause?.type ??
-        clause?.label ??
-        clause?.category ??
-        clause?.clause_label ??
-        "Unknown Clause"
-    );
-}
-
-
-function getClauseText(clause) {
-
-    return (
-        clause?.text ??
-        clause?.clause_text ??
-        clause?.content ??
-        clause?.value ??
-        clause?.clause ??
-        ""
-    );
-}
-
-
-function getClauseConfidence(clause) {
-
-    return (
-        clause?.confidence ??
-        clause?.confidence_score ??
-        clause?.probability ??
-        clause?.prediction_confidence ??
-        clause?.score ??
-        null
-    );
-}
-
-
-/* =========================================================
-   VIEW CONTRACT / CLAUSE ANALYSIS
-========================================================= */
-
-async function viewContract(
-    contractId
-) {
-
-    currentContractId =
-        contractId;
-
-
-    showSection(
-        "analysis"
-    );
-
-
-    const content =
-        document.getElementById(
-            "analysisContent"
-        );
-
-
-    content.innerHTML = `
-
-        <div class="card">
-
-            <div class="empty">
-                Loading contract analysis...
-            </div>
-
-        </div>
-
-    `;
-
-
-    try {
-
-        const response =
-            await fetch(
-                `${API_BASE}/v1/contracts/${encodeURIComponent(contractId)}/results`,
-                {
-                    cache: "no-store"
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                `HTTP ${response.status}`
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        currentContract =
-            data;
-
-
-        renderContractAnalysis(
-            data,
-            contractId
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Analysis error:",
-            error
-        );
-
-
-        content.innerHTML = `
-
-            <div class="card">
-
-                <div class="error-box">
-
-                    Unable to load contract analysis.
-
-                    <br><br>
-
-                    ${escapeHtml(
-                        error.message
-                    )}
-
-                </div>
-
-            </div>
-
-        `;
-    }
-}
-
-
-/* =========================================================
-   ENTITY NORMALIZATION
-========================================================= */
-
-function normalizeEntities(
-    entities
-) {
-
-    const groups = {};
-
-
-    if (
-        Array.isArray(entities)
-    ) {
-
-        entities.forEach(
-            entity => {
-
-                if (
-                    entity === null ||
-                    entity === undefined
-                ) {
-                    return;
-                }
-
-
-                const type =
-                    entity.entity_type ??
-                    entity.type ??
-                    entity.label ??
-                    entity.entity_label ??
-                    "ENTITY";
-
-
-                const value =
-                    entity.text ??
-                    entity.value ??
-                    entity.entity ??
-                    entity.name ??
-                    "";
-
-
-                if (
-                    value === null ||
-                    value === undefined ||
-                    String(value).trim() === ""
-                ) {
-                    return;
-                }
-
-
-                if (!groups[type]) {
-                    groups[type] = [];
-                }
-
-
-                groups[type].push(
-                    String(value)
-                );
-
-            }
-        );
-
-    }
-
-    else if (
-        entities &&
-        typeof entities === "object"
-    ) {
-
-        Object.entries(
-            entities
-        ).forEach(
-            ([type, value]) => {
-
-                if (
-                    value === null ||
-                    value === undefined
-                ) {
-                    return;
-                }
-
-
-                let values =
-                    Array.isArray(value)
-                        ? value
-                        : [value];
-
-
-                values =
-                    values
-                        .map(item => {
-
-                            if (
-                                item &&
-                                typeof item === "object"
-                            ) {
-
-                                return (
-                                    item.text ??
-                                    item.value ??
-                                    item.entity ??
-                                    item.name ??
-                                    ""
-                                );
-
-                            }
-
-                            return item;
-
-                        })
-                        .filter(
-                            item =>
-                                item !== null &&
-                                item !== undefined &&
-                                String(item).trim() !== ""
-                        )
-                        .map(
-                            item =>
-                                String(item)
-                        );
-
-
-                if (values.length) {
-                    groups[type] = values;
-                }
-
-            }
-        );
-    }
-
-
-    return groups;
-}
-
-
-/* =========================================================
-   ENTITY HTML
-========================================================= */
-
-function renderEntities(
-    entities
-) {
-
-    const groups =
-        normalizeEntities(
-            entities
-        );
-
-
-    const entries =
-        Object.entries(groups);
-
-
-    if (!entries.length) {
-
-        return `
-
-            <div class="empty">
-                No entities were returned by the API.
-            </div>
-
-        `;
-    }
-
-
-    return entries
-        .map(
-            ([type, values]) => {
-
-                const uniqueValues =
-                    [
-                        ...new Set(values)
-                    ];
-
-
-                return `
-
-                    <div class="entity-group">
-
-                        <div class="entity-group-header">
-
-                            <div class="entity-group-name">
-                                ${escapeHtml(type)}
-                            </div>
-
-                            <div class="entity-count">
-                                ${uniqueValues.length}
-                            </div>
-
-                        </div>
-
-
-                        <div class="entity-values">
-
-                            ${uniqueValues
-                                .map(
-                                    value => `
-
-                                        <div class="entity-value-item">
-                                            ${escapeHtml(value)}
-                                        </div>
-
-                                    `
-                                )
-                                .join("")}
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        )
-        .join("");
-}
-
-
-/* =========================================================
-   CLAUSE HTML
-========================================================= */
-
-function renderDetectedClauses(
-    clauses
-) {
-
-    if (
-        !Array.isArray(clauses) ||
-        !clauses.length
-    ) {
-
-        return `
-
-            <div class="empty">
-                No clause details were returned by the API.
-            </div>
-
-        `;
-    }
-
-
-    return clauses
-        .map(
-            (clause, index) => {
-
-                const type =
-                    getClauseType(
-                        clause
-                    );
-
-
-                const text =
-                    getClauseText(
-                        clause
-                    );
-
-
-                const confidence =
-                    getClauseConfidence(
-                        clause
-                    );
-
-
-                const risk =
-                    clause?.risk_score ??
-                    clause?.risk_level ??
-                    null;
-
-
-                let riskBadge = "";
-
-
-                if (
-                    risk !== null &&
-                    risk !== undefined &&
-                    typeof risk === "number"
-                ) {
-
-                    const info =
-                        getRiskInfo(
-                            risk
-                        );
-
-
-                    riskBadge = `
-
-                        <span
-                            class="risk-level ${info.className}"
-                        >
-                            ${info.score}
-                            •
-                            ${info.level}
-                        </span>
-
-                    `;
-                }
-
-
-                return `
-
-                    <div class="detected-clause">
-
-                        <div class="detected-clause-header">
-
-                            <div class="detected-clause-left">
-
-                                <div class="clause-number">
-                                    ${index + 1}
-                                </div>
-
-
-                                <div>
-
-                                    <div class="detected-clause-title">
-                                        ${escapeHtml(type)}
-                                    </div>
-
-                                    <div class="detected-clause-type">
-                                        Clause Type
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;">
-
-                                ${
-                                    confidence !== null &&
-                                    confidence !== undefined
-                                        ? `
-                                            <span class="confidence-label">
-                                                Confidence:
-                                                ${formatConfidence(confidence)}
-                                            </span>
-                                          `
-                                        : `
-                                            <span class="confidence-label">
-                                                Confidence: N/A
-                                            </span>
-                                          `
-                                }
-
-                                ${riskBadge}
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="actual-clause-label">
-                            ACTUAL CLAUSE TEXT
-                        </div>
-
-
-                        <div class="actual-clause-text">
-                            ${
-                                text
-                                    ? escapeHtml(text)
-                                    : "No clause text returned by the API."
-                            }
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        )
-        .join("");
-}
-
-
-/* =========================================================
-   ALL CONTRACTS
-========================================================= */
-
-function renderAllContracts() {
-
-    if (!contracts.length) {
-
-        return `
-
-            <div class="empty">
-                No contracts available.
-            </div>
-
-        `;
-    }
-
-
-    return `
-
-        <div class="table-wrap">
-
-            <table class="all-contracts-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            FILENAME
-                        </th>
-
-                        <th>
-                            STATUS
-                        </th>
-
-                        <th>
-                            RISK
-                        </th>
-
-                        <th>
-                            UPLOADED TIME
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    ${
-                        contracts
-                            .map(
-                                contract => {
-
-                                    const name =
-                                        getContractName(
-                                            contract
-                                        );
-
-
-                                    const status =
-                                        normalizeStatus(
-                                            contract
-                                        );
-
-
-                                    const risk =
-                                        getContractRisk(
-                                            contract
-                                        );
-
-
-                                    const info =
-                                        getRiskInfo(
-                                            risk
-                                        );
-
-
-                                    const uploaded =
-                                        getUploadedTime(
-                                            contract
-                                        );
-
-
-                                    let statusClass =
-                                        "processing";
-
-
-                                    if (
-                                        isCompletedContract(
-                                            contract
-                                        )
-                                    ) {
-
-                                        statusClass =
-                                            "completed";
-
-                                    } else if (
-                                        status.includes("fail") ||
-                                        status.includes("error")
-                                    ) {
-
-                                        statusClass =
-                                            "failed";
-                                    }
-
-
-                                    return `
-
-                                        <tr>
-
-                                            <td>
-
-                                                <div class="contract-name">
-                                                    ${escapeHtml(name)}
-                                                </div>
-
-                                            </td>
-
-
-                                            <td>
-
-                                                <span
-                                                    class="status ${statusClass}"
-                                                >
-                                                    ${escapeHtml(status)}
-                                                </span>
-
-                                            </td>
-
-
-                                            <td>
-
-                                                <span
-                                                    class="risk-level ${info.className}"
-                                                >
-                                                    ${info.score}
-                                                    •
-                                                    ${info.level}
-                                                </span>
-
-                                            </td>
-
-
-                                            <td>
-                                                ${escapeHtml(
-                                                    formatDateTime(
-                                                        uploaded
-                                                    )
-                                                )}
-                                            </td>
-
-                                        </tr>
-
-                                    `;
-
-                                }
-                            )
-                            .join("")
-                    }
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    `;
-}
-
-
-/* =========================================================
-   RENDER CONTRACT ANALYSIS
-========================================================= */
-
-function renderContractAnalysis(
-    data,
-    contractId
-) {
-
-    const content =
-        document.getElementById(
-            "analysisContent"
-        );
-
-
-    const name =
-        data?.filename ||
-        data?.file_name ||
-        data?.name ||
-        data?.title ||
-        currentContract?.filename ||
-        currentContract?.file_name ||
-        `Contract ${contractId}`;
-
-
-    const score =
-        data?.risk_score ??
-        data?.riskScore ??
-        data?.risk?.score ??
-        data?.risk?.risk_score ??
-        (
-            typeof data?.risk === "number"
-                ? data.risk
-                : 0
-        );
-
-
-    const clauses =
-        getResultClauses(
-            data
-        );
-
-
-    const entities =
-        getResultEntities(
-            data
-        );
-
-
-    const info =
-        getRiskInfo(
-            score
-        );
-
-
-    document.getElementById(
-        "analysisTitle"
-    ).textContent =
-        name;
-
-
-    document.getElementById(
-        "analysisSubtitle"
-    ).textContent =
-        `Contract ID: ${contractId}`;
-
-
-    const entityHtml =
-        renderEntities(
-            entities
-        );
-
-
-    const clauseHtml =
-        renderDetectedClauses(
-            clauses
-        );
-
-
-    const uploadedTime =
-        getUploadedTime(
-            data
-        );
-
-
-    content.innerHTML = `
-
-        <!-- ================= RISK ================= -->
-
-        <div class="card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <h2>
-                        Risk Assessment
-                    </h2>
-
-                    <p>
-                        ${escapeHtml(name)}
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="result-risk-summary">
-
-                <!-- RISK SCORE -->
-
-                <div class="result-risk-card">
-
-                    <div class="result-risk-label">
-                        RISK SCORE
-                    </div>
-
-                    <div class="result-risk-score">
-
-                        ${info.score}
-
-                        <span>
-                            / 100
-                        </span>
-
-                    </div>
-
-
-                    <div class="result-risk-bar">
-
-                        <div
-                            class="result-risk-fill"
-                            style="
-                                width:${info.score}%;
-                                background:${info.color};
-                            "
-                        ></div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- RISK LEVEL -->
-
-                <div class="result-risk-card">
-
-                    <div class="result-risk-label">
-                        RISK LEVEL
-                    </div>
-
-
-                    <div class="result-risk-level-row">
-
-                        <div
-                            style="
-                                font-size:22px;
-                                font-weight:800;
-                            "
-                        >
-                            ${info.title}
-                        </div>
-
-
-                        <span
-                            class="risk-level ${info.className}"
-                        >
-                            ${info.level}
-                        </span>
-
-                    </div>
-
-
-                    <div class="result-risk-description">
-                        ${escapeHtml(
-                            info.description
-                        )}
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Keep original circular risk UI -->
-
-            <div class="risk-layout">
-
-                <div>
-
-                    <div
-                        class="risk-circle"
-                        id="contractRiskCircle"
-                        style="
-                            --risk-progress:${info.score}%;
-                            --risk-color:${info.color};
-                        "
-                    >
-
-                        <div class="risk-center">
-
-                            <div
-                                class="risk-number"
-                                id="contractRiskScore"
-                            >
-                                ${info.score}
-                            </div>
-
-                            <div class="risk-outof">
-                                out of 100
-                            </div>
-
-                            <div
-                                class="risk-level ${info.className}"
-                                id="contractRiskLevel"
-                            >
-                                ${info.level}
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="risk-info">
-
-                    <h3 id="contractRiskTitle">
-                        ${info.title}
-                    </h3>
-
-                    <p id="contractRiskDescription">
-                        ${escapeHtml(
-                            info.description
-                        )}
-                    </p>
-
-
-                    <div class="risk-scale">
-
-                        <div class="scale-row">
-
-                            <span>0</span>
-                            <span>30</span>
-                            <span>60</span>
-                            <span>80</span>
-                            <span>100</span>
-
-                        </div>
-
-                        <div class="scale-bar"></div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================= ENTITIES ================= -->
-
-        <div class="card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <h2>
-                        Entities
-                    </h2>
-
-                    <p>
-                        DATE • ORG • MONEY • LAW_JURISDICTION • CLAUSE • etc.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div>
-
-                ${entityHtml}
-
-            </div>
-
-        </div>
-
-
-        <!-- ================= CLAUSES DETECTED ================= -->
-
-        <div class="card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <h2>
-                        Clauses Detected
-                    </h2>
-
-                    <p>
-                        ${clauses.length}
-                        detected clauses
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div>
-
-                ${clauseHtml}
-
-            </div>
-
-        </div>
-
-
-        <!-- ================= ALL CONTRACTS ================= -->
-
-        <div class="card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <h2>
-                        All Contracts
-                    </h2>
-
-                    <p>
-                        Uploaded contracts and their analysis status
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            ${renderAllContracts()}
-
-        </div>
-
-    `;
-
-
-    updateRiskCircle(
-        "contractRiskCircle",
-        "contractRiskScore",
-        "contractRiskLevel",
-        "contractRiskTitle",
-        "contractRiskDescription",
-        score
-    );
-}
-
-
-/* =========================================================
-   DELETE
-========================================================= */
-
-async function deleteContract(
-    contractId
-) {
-
-    const confirmed =
-        confirm(
-            "Delete this contract?"
-        );
-
-
-    if (!confirmed) return;
-
-
-    try {
-
-        const response =
-            await fetch(
-                `${API_BASE}/v1/contracts/${encodeURIComponent(contractId)}`,
-                {
-                    method: "DELETE"
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                `HTTP ${response.status}`
-            );
-        }
-
-
-        showToast(
-            "Contract deleted successfully."
-        );
-
-
-        await loadContracts();
-
-
-        showSection(
-            "contracts"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Delete error:",
-            error
-        );
-
-
-        showToast(
-            `Delete failed: ${error.message}`,
-            5000
-        );
-    }
-}
-
-
-/* =========================================================
-   CLAUSE SEARCH
-========================================================= */
-
-async function loadClauseSearchData() {
-
-    const resultsContainer =
-        document.getElementById(
-            "clauseSearchResults"
-        );
-
-
-    resultsContainer.innerHTML = `
-
-        <div class="empty">
-            Loading clauses...
-        </div>
-
-    `;
-
-
-    clauseResults = [];
-
-
-    try {
-
-        if (!contracts.length) {
-
-            await loadContracts();
-        }
-
-
-        const completed =
-            contracts.filter(
-                isCompletedContract
-            );
-
-
-        const filter =
-            document.getElementById(
-                "clauseContractFilter"
-            );
-
-
-        const previousValue =
-            filter.value;
-
-
-        filter.innerHTML = `
-
-            <option value="">
-                All Contracts
-            </option>
-
-        `;
-
-
-        completed.forEach(
-            contract => {
-
-                const id =
-                    getContractId(
-                        contract
-                    );
-
-
-                if (!id) return;
-
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    String(id);
-
-
-                option.textContent =
-                    getContractName(
-                        contract
-                    );
-
-
-                filter.appendChild(
-                    option
-                );
-
-            }
-        );
-
-
-        /*
-         * Keep selected contract if it still exists.
-         */
-
-        if (
-            previousValue &&
-            [
-                ...filter.options
-            ].some(
-                option =>
-                    option.value ===
-                    previousValue
-            )
-        ) {
-
-            filter.value =
-                previousValue;
-        }
-
-
-        /*
-         * Load each contract's own result endpoint.
-         *
-         * Every clause receives its contractId.
-         * Therefore selecting sample_contract
-         * only shows clauses belonging to it.
-         */
-
-        const requests =
-            completed.map(
-                async contract => {
-
-                    const id =
-                        getContractId(
-                            contract
-                        );
-
-
-                    if (!id) {
-                        return;
-                    }
-
-
-                    try {
-
-                        const response =
-                            await fetch(
-                                `${API_BASE}/v1/contracts/${encodeURIComponent(id)}/results`,
-                                {
-                                    cache: "no-store"
-                                }
-                            );
-
-
-                        if (!response.ok) {
-                            return;
-                        }
-
-
-                        const data =
-                            await response.json();
-
-
-                        const clauses =
-                            getResultClauses(
-                                data
-                            );
-
-
-                        clauses.forEach(
-                            clause => {
-
-                                clauseResults.push({
-
-                                    contractId:
-                                        String(id),
-
-                                    contractName:
-                                        getContractName(
-                                            contract
-                                        ),
-
-                                    type:
-                                        getClauseType(
-                                            clause
-                                        ),
-
-                                    text:
-                                        getClauseText(
-                                            clause
-                                        ),
-
-                                    confidence:
-                                        getClauseConfidence(
-                                            clause
-                                        ),
-
-                                    risk:
-                                        clause?.risk_score ??
-                                        (
-                                            typeof clause?.risk === "number"
-                                                ? clause.risk
-                                                : null
-                                        )
-
-                                });
-
-                            }
-                        );
-
-
-                    } catch (error) {
-
-                        console.warn(
-                            "Could not load clauses:",
-                            id,
-                            error
-                        );
-
-                    }
-
-                }
-            );
-
-
-        await Promise.all(
-            requests
-        );
-
-
-        searchClauses();
-
-
-    } catch (error) {
-
-        console.error(
-            "Clause search error:",
-            error
-        );
-
-
-        resultsContainer.innerHTML = `
-
-            <div class="error-box">
-
-                Unable to load clause analysis.
-
-                <br><br>
-
-                ${escapeHtml(
-                    error.message
-                )}
-
-            </div>
-
-        `;
-    }
-}
-
-
-/* =========================================================
-   SEARCH CLAUSES
-========================================================= */
-
-function searchClauses() {
-
-    const input =
-        document.getElementById(
-            "clauseSearch"
-        );
-
-
-    const filter =
-        document.getElementById(
-            "clauseContractFilter"
-        );
-
-
-    const query =
-        input.value
-            .toLowerCase()
-            .trim();
-
-
-    const contractFilter =
-        String(
-            filter.value || ""
-        );
-
-
-    const matches =
-        clauseResults.filter(
-            clause => {
-
-                /*
-                 * IMPORTANT:
-                 *
-                 * If a contract is selected,
-                 * ONLY that contract's ID can match.
-                 */
-
-                const matchesContract =
-                    !contractFilter ||
-                    String(
-                        clause.contractId
-                    ) ===
-                    contractFilter;
-
-
-                const searchable =
-                    `
-                    ${clause.type || ""}
-                    ${clause.text || ""}
-                    ${clause.contractName || ""}
-                    `.toLowerCase();
-
-
-                const matchesSearch =
-                    !query ||
-                    searchable.includes(
-                        query
-                    );
-
-
-                return (
-                    matchesContract &&
-                    matchesSearch
-                );
-
-            }
-        );
-
-
-    document.getElementById(
-        "clauseSearchCount"
-    ).textContent =
-        `${matches.length} result${
-            matches.length === 1
-                ? ""
-                : "s"
-        }`;
-
-
-    renderClauseSearchResults(
-        matches
-    );
-}
-
-
-/* =========================================================
-   RENDER SEARCH RESULTS
-========================================================= */
-
-function renderClauseSearchResults(
-    matches
-) {
-
-    const container =
-        document.getElementById(
-            "clauseSearchResults"
-        );
-
-
-    if (!matches.length) {
-
-        container.innerHTML = `
-
-            <div class="empty">
-                No matching clauses found.
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        matches
-            .map(
-                (clause, index) => {
-
-                    let riskBadge = "";
-
-
-                    if (
-                        clause.risk !== null &&
-                        clause.risk !== undefined
-                    ) {
-
-                        const info =
-                            getRiskInfo(
-                                clause.risk
-                            );
-
-
-                        riskBadge = `
-
-                            <span
-                                class="risk-level ${info.className}"
-                            >
-                                ${info.score}
-                                •
-                                ${info.level}
-                            </span>
-
-                        `;
-                    }
-
-
-                    const confidence =
-                        clause.confidence !== null &&
-                        clause.confidence !== undefined
-                            ? `
-                                <span class="confidence-label">
-                                    Confidence:
-                                    ${formatConfidence(
-                                        clause.confidence
-                                    )}
-                                </span>
-                              `
-                            : "";
-
-
-                    return `
-
-                        <div class="clause-result">
-
-                            <div class="clause-top">
-
-                                <div>
-
-                                    <div class="clause-type">
-                                        ${escapeHtml(
-                                            clause.type
-                                        )}
-                                    </div>
-
-                                    <div class="clause-contract">
-                                        ${escapeHtml(
-                                            clause.contractName
-                                        )}
-                                    </div>
-
-                                </div>
-
-
-                                <div
-                                    style="
-                                        display:flex;
-                                        align-items:center;
-                                        gap:7px;
-                                        flex-wrap:wrap;
-                                        justify-content:flex-end;
-                                    "
-                                >
-
-                                    ${confidence}
-
-                                    ${riskBadge}
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="clause-text">
-
-                                ${escapeHtml(
-                                    clause.text ||
-                                    "No clause text available."
-                                )}
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }
-            )
-            .join("");
-}
-
-
-/* =========================================================
-   CLEAR SEARCH
-========================================================= */
-
-function clearClauseSearch() {
-
-    document.getElementById(
-        "clauseSearch"
-    ).value = "";
-
-
-    document.getElementById(
-        "clauseContractFilter"
-    ).value = "";
-
-
-    searchClauses();
-}
-
-
-/* =========================================================
-   REFRESH
-========================================================= */
-
-async function refreshCurrentPage() {
-
-    const active =
-        document.querySelector(
-            ".section.active"
-        );
-
-
-    if (!active) return;
-
-
-    await checkApiHealth();
-
-
-    if (
-        active.id === "dashboard"
-    ) {
-
-        await loadDashboard();
-
-    }
-
-    else if (
-        active.id === "contracts"
-    ) {
-
-        await loadContracts();
-
-    }
-
-    else if (
-        active.id === "search"
-    ) {
-
-        await loadClauseSearchData();
-
-    }
-
-    else if (
-        active.id === "analysis" &&
-        currentContract
-    ) {
-
-        /*
-         * Re-fetch the current contract
-         * so the analysis is not stale.
-         */
-
-        if (currentContractId) {
-
-            await viewContract(
-                currentContractId
-            );
-
-        } else {
-
-            renderContractAnalysis(
-                currentContract,
-                getContractId(
-                    currentContract
-                )
-            );
-        }
-    }
-
-
-    showToast(
-        "Page refreshed."
-    );
-}
-
-
-/* =========================================================
-   INITIALIZATION
-========================================================= */
-
-async function initialize() {
-
-    await checkApiHealth();
-
-    await loadDashboard();
-
-}
-
-
-initialize();
-
-</script>
-
-</body>
+    const value = Math.max(0, Math.min(100, Number(score) || 0));
+
+    if (value <= 30)
+        return {
+            score: Math.round(value),
+            level: "LOW",
+            color: "#22c55e",
+            className: "low",
+            title: "Low Risk",
+            description: "No major risk indicators detected. The contract appears to have relatively low risk."
+        };
+
+    if (value <= 80)
+        return {
+            score: Math.round(value),
+            level: "MEDIUM",
+            color: "yellow",
+            className: "medium",
+            title: "Medium Risk",
+            description: "Moderate risk detected. Review the identified clauses before approving the contract."
+        };
+
+    if (value < 100)
+        return {
+            score: Math.round(value),
+            level: "HIGH",
+            color: "Red",
+            className: "high",
+            title: "High Risk",
+            description: "Several potentially risky provisions were detected. Detailed legal review is recommended."
+        };
+
+} 
+ 
+function updateRiskCircle(circleId, scoreId, levelId, titleId, descriptionId, score) { 
+    const info = getRiskInfo(score); 
+    const circle = document.getElementById(circleId), scoreEl = document.getElementById(scoreId), levelEl = document.getElementById(levelId), titleEl = document.getElementById(titleId), descEl = document.getElementById(descriptionId); 
+    if (scoreEl) scoreEl.textContent = info.score; 
+    if (circle) { circle.style.setProperty("--risk-progress", `${info.score}%`); circle.style.setProperty("--risk-color", info.color); } 
+    if (levelEl) { levelEl.textContent = info.level; levelEl.className = `risk-level ${info.className}`; } 
+    if (titleEl) titleEl.textContent = info.title; 
+    if (descEl) descEl.textContent = info.description; 
+} 
+ 
+function formatConfidence(value) { 
+    if (value === null || value === undefined || value === "") return "N/A"; 
+    let number = Number(value); 
+    if (!Number.isFinite(number)) return escapeHtml(value); 
+    if (number <= 1) number *= 100; 
+    return `${Math.max(0, Math.min(100, number)).toFixed(1)}%`; 
+} 
+ 
+async function checkApiHealth() { 
+    const dot = document.getElementById("apiDot"), text = document.getElementById("apiText"); 
+    try { 
+        const response = await fetch(`${API_BASE}/health`, { method: "GET", cache: "no-store" }); 
+        if (!response.ok) throw new Error(`HTTP ${response.status}`); 
+        dot.className = "status-dot online"; text.textContent = "API Online"; 
+    } catch (error) { 
+        console.error("API health error:", error); 
+        dot.className = "status-dot offline"; text.textContent = "API Offline"; 
+    } 
+} 
+ 
+const pageInformation = { 
+    dashboard: ["Dashboard", "Contract intelligence overview"], 
+    upload: ["Upload Contract", "Upload a PDF for automated analysis"], 
+    contracts: ["Contracts", "Manage uploaded contracts"], 
+    search: ["Clause Search", "Search analyzed contract clauses"], 
+    analysis: ["Clause Analysis", "Detailed contract analysis"] 
+}; 
+ 
+function showSection(sectionId) { 
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active")); 
+    const section = document.getElementById(sectionId); 
+    if (!section) return; 
+    section.classList.add("active"); 
+    document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.section === sectionId)); 
+    const info = pageInformation[sectionId]; 
+    if (info) { 
+        document.getElementById("pageTitle").textContent = info[0]; 
+        document.getElementById("pageSubtitle").textContent = info[1]; 
+    } 
+    document.getElementById("sidebar").classList.remove("open"); 
+    if (sectionId === "dashboard") loadDashboard(); 
+    if (sectionId === "contracts") loadContracts(); 
+    if (sectionId === "search") loadClauseSearchData(); 
+} 
+ 
+document.querySelectorAll(".nav-btn").forEach(button => button.addEventListener("click", () => showSection(button.dataset.section))); 
+document.getElementById("mobileMenu").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open")); 
+ 
+async function loadContracts() { 
+    const table = document.getElementById("contractsTable"); 
+    try { 
+        const response = await fetch(`${API_BASE}/v1/contracts`, { cache: "no-store" }); 
+        if (!response.ok) throw new Error(`HTTP ${response.status}`); 
+        const data = await response.json(); 
+        contracts = Array.isArray(data) ? data : (data.contracts || data.items || data.results || []); 
+        renderContracts(); updateDashboardStats(); 
+    } catch (error) { 
+        console.error("Contracts error:", error); 
+        table.innerHTML = `<tr><td colspan="5"><div class="error-box">Unable to load contracts.<br><br>Make sure FastAPI is running at <strong>${escapeHtml(API_BASE)}</strong><br><br>Error: ${escapeHtml(error.message)}</div></td></tr>`; 
+    } 
+} 
+ 
+function isCompletedContract(contract) { 
+    const status = normalizeStatus(contract); 
+    return status.includes("complete") || status === "done" || status === "success"; 
+} 
+ 
+function getContractRisk(contract) { 
+    return contract?.risk_score ?? contract?.riskScore ?? contract?.risk?.score ?? contract?.risk?.risk_score ?? (typeof contract?.risk === "number" ? contract.risk : 0); 
+} 
+ 
+function getContractClauseCount(contract) { 
+    return Number(contract?.clause_count ?? contract?.clauses_count ?? contract?.total_clauses ?? (Array.isArray(contract?.clauses) ? contract.clauses.length : 0)) || 0; 
+} 
+ 
+function renderContracts() { 
+    const table = document.getElementById("contractsTable"); 
+    if (!contracts.length) { 
+        table.innerHTML = `<tr><td colspan="5"><div class="empty">No contracts uploaded yet.</div></td></tr>`; return; 
+    } 
+    table.innerHTML = contracts.map(contract => { 
+        const id = getContractId(contract), name = getContractName(contract), status = normalizeStatus(contract), info = getRiskInfo(getContractRisk(contract)), clauses = getContractClauseCount(contract); 
+        let statusClass = "processing"; 
+        if (status.includes("complete") || status === "done" || status === "success") statusClass = "completed"; 
+        if (status.includes("fail") || status.includes("error")) statusClass = "failed"; 
+        return `<tr> 
+            <td><div class="contract-name">${escapeHtml(name)}</div><div class="contract-id">ID: ${escapeHtml(id)}</div></td> 
+            <td><span class="status ${statusClass}">${escapeHtml(status)}</span></td> 
+            <td><span class="risk-level ${info.className}">${info.score} • ${info.level}</span></td> 
+            <td>${clauses}</td> 
+            <td><button class="action-btn" onclick="viewContract('${escapeJs(id)}')">View</button><button class="action-btn delete-btn" onclick="deleteContract('${escapeJs(id)}')">Delete</button></td> 
+        </tr>`; 
+    }).join(""); 
+} 
+ 
+function updateDashboardStats() { 
+    const completed = contracts.filter(isCompletedContract); 
+    let riskScores = [], clauseCount = 0; 
+    completed.forEach(contract => { 
+        const score = getContractRisk(contract); 
+        if (score !== undefined && score !== null && Number.isFinite(Number(score))) riskScores.push(Number(score)); 
+        clauseCount += getContractClauseCount(contract); 
+    }); 
+    const average = riskScores.length ? Math.round(riskScores.reduce((a, b) => a + b, 0) / riskScores.length) : 0; 
+    document.getElementById("totalContracts").textContent = contracts.length; 
+    document.getElementById("completedContracts").textContent = completed.length; 
+    document.getElementById("totalClauses").textContent = clauseCount; 
+    document.getElementById("averageRisk").textContent = average; 
+    updateRiskCircle("dashboardRiskCircle", "dashboardRiskScore", "dashboardRiskLevel", "dashboardRiskTitle", "dashboardRiskDescription", average); 
+    renderRecentContracts(completed); 
+} 
+ 
+function renderRecentContracts(list) { 
+    const container = document.getElementById("recentContracts"); 
+    if (!list.length) { container.innerHTML = `<div class="empty">No completed contracts available.</div>`; return; } 
+    container.innerHTML = [...list].slice(-5).reverse().map(contract => { 
+        const info = getRiskInfo(getContractRisk(contract)); 
+        return `<div class="clause-result" style="display:flex;justify-content:space-between;align-items:center;"> 
+            <div><div class="contract-name">${escapeHtml(getContractName(contract))}</div><div class="contract-id">Completed and analyzed</div></div> 
+            <span class="risk-level ${info.className}">${info.score} • ${info.level}</span> 
+        </div>`; 
+    }).join(""); 
+} 
+ 
+async function loadDashboard() { await loadContracts(); } 
+ 
+const fileInput = document.getElementById("fileInput"), uploadBox = document.getElementById("uploadBox"); 
+fileInput.addEventListener("change", () => { 
+    const file = fileInput.files[0]; 
+    if (!file) return; 
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) { showToast("Please select a PDF file."); fileInput.value = ""; return; } 
+    document.getElementById("selectedFile").textContent = `Selected: ${file.name}`; 
+    uploadContract(file); 
+}); 
+uploadBox.addEventListener("dragover", e => { e.preventDefault(); uploadBox.classList.add("drag"); }); 
+uploadBox.addEventListener("dragleave", () => uploadBox.classList.remove("drag")); 
+uploadBox.addEventListener("drop", e => { 
+    e.preventDefault(); uploadBox.classList.remove("drag"); 
+    const file = e.dataTransfer.files[0]; 
+    if (!file) return; 
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) { showToast("Only PDF files are supported."); return; } 
+    fileInput.files = e.dataTransfer.files; 
+    document.getElementById("selectedFile").textContent = `Selected: ${file.name}`; 
+    uploadContract(file); 
+}); 
+ 
+async function uploadContract(file) { 
+    const progressContainer = document.getElementById("uploadProgress"), progressFill = document.getElementById("progressFill"), progressStatus = document.getElementById("progressStatus"), progressPercent = document.getElementById("progressPercent"); 
+    progressContainer.style.display = "block"; progressFill.style.width = "10%"; progressPercent.textContent = "10%"; progressStatus.textContent = "Uploading..."; 
+    try { 
+        const formData = new FormData(); formData.append("file", file); 
+        const response = await fetch(`${API_BASE}/v1/contracts/upload`, { method: "POST", body: formData }); 
+        if (!response.ok) { 
+            let message = `HTTP ${response.status}`; 
+            try { const err = await response.json(); message = err.detail || err.message || message; } catch {} 
+            throw new Error(message); 
+        } 
+        const data = await response.json(), contractId = data.id ?? data.contract_id ?? data.uuid ?? data.contract?.id; 
+        progressFill.style.width = "40%"; progressPercent.textContent = "40%"; progressStatus.textContent = "Processing contract..."; 
+        showToast("Contract uploaded successfully."); 
+        if (contractId) startContractPolling(contractId); 
+        else { await loadContracts(); progressFill.style.width = "100%"; progressPercent.textContent = "100%"; progressStatus.textContent = "Upload complete"; } 
+    } catch (error) { 
+        console.error("Upload error:", error); 
+        progressFill.style.width = "0%"; progressPercent.textContent = "0%"; progressStatus.textContent = "Upload failed"; showToast(`Upload failed: ${error.message}`, 6000); 
+    } 
+} 
+ 
+function startContractPolling(contractId) { 
+    if (pollingTimers[contractId]) clearInterval(pollingTimers[contractId]); 
+    let attempts = 0; const maxAttempts = 120; 
+    pollingTimers[contractId] = setInterval(async () => { 
+        attempts++; 
+        try { 
+            const response = await fetch(`${API_BASE}/v1/contracts/${encodeURIComponent(contractId)}/status`, { cache: "no-store" }); 
+            if (!response.ok) throw new Error(`HTTP ${response.status}`); 
+            const data = await response.json(), status = String(data.status ?? data.state ?? data.processing_status ?? "").toLowerCase(); 
+            const progress = document.getElementById("progressFill"), percent = document.getElementById("progressPercent"), statusText = document.getElementById("progressStatus"); 
+            if (status.includes("complete") || status === "done" || status === "success") { 
+                progress.style.width = "100%"; percent.textContent = "100%"; statusText.textContent = "Analysis complete"; 
+                clearInterval(pollingTimers[contractId]); delete pollingTimers[contractId]; 
+                await loadContracts(); showToast("Contract analysis completed."); setTimeout(() => viewContract(contractId), 500); 
+            } else if (status.includes("fail") || status.includes("error")) { 
+                clearInterval(pollingTimers[contractId]); delete pollingTimers[contractId]; 
+                statusText.textContent = "Analysis failed"; showToast("Contract analysis failed."); 
+            } else { 
+                const estimated = Math.min(90, 40 + attempts); 
+                progress.style.width = `${estimated}%`; percent.textContent = `${estimated}%`; statusText.textContent = data.message || "Analyzing contract..."; 
+            } 
+        } catch (error) { console.error("Polling error:", error); } 
+        if (attempts >= maxAttempts) { 
+            clearInterval(pollingTimers[contractId]); delete pollingTimers[contractId]; 
+            showToast("Analysis is taking longer than expected. Check Contracts for the latest status."); await loadContracts(); 
+        } 
+    }, 2500); 
+} 
+ 
+function getResultClauses(data) { return Array.isArray(data?.clauses ?? data?.detected_clauses ?? data?.clause_results ?? data?.results ?? data?.analysis?.clauses) ? (data?.clauses ?? data?.detected_clauses ?? data?.clause_results ?? data?.results ?? data?.analysis?.clauses) : []; } 
+function getResultEntities(data) { return data?.entities ?? data?.extracted_entities ?? data?.named_entities ?? data?.analysis?.entities ?? []; } 
+function getClauseType(clause) { return clause?.clause_type ?? clause?.type ?? clause?.label ?? clause?.category ?? clause?.clause_label ?? "Unknown Clause"; } 
+function getClauseText(clause) { return clause?.text ?? clause?.clause_text ?? clause?.content ?? clause?.value ?? clause?.clause ?? ""; } 
+function getClauseConfidence(clause) { return clause?.confidence ?? clause?.confidence_score ?? clause?.probability ?? clause?.prediction_confidence ?? clause?.score ?? null; } 
+ 
+async function viewContract(contractId) { 
+    currentContractId = contractId; showSection("analysis"); 
+    const content = document.getElementById("analysisContent"); 
+    content.innerHTML = `<div class="card"><div class="empty">Loading contract analysis...</div></div>`; 
+    try { 
+        const response = await fetch(`${API_BASE}/v1/contracts/${encodeURIComponent(contractId)}/results`, { cache: "no-store" }); 
+        if (!response.ok) throw new Error(`HTTP ${response.status}`); 
+        const data = await response.json(); currentContract = data; renderContractAnalysis(data, contractId); 
+    } catch (error) { 
+        console.error("Analysis error:", error); 
+        content.innerHTML = `<div class="card"><div class="error-box">Unable to load contract analysis.<br><br>${escapeHtml(error.message)}</div></div>`; 
+    } 
+} 
+ 
+function normalizeEntities(entities) { 
+    const groups = {}; 
+    if (Array.isArray(entities)) { 
+        entities.forEach(entity => { 
+            if (entity === null || entity === undefined) return; 
+            const type = entity.entity_type ?? entity.type ?? entity.label ?? entity.entity_label ?? "ENTITY", value = entity.text ?? entity.value ?? entity.entity ?? entity.name ?? ""; 
+            if (value === null || value === undefined || String(value).trim() === "") return; 
+            if (!groups[type]) groups[type] = []; groups[type].push(String(value)); 
+        }); 
+    } else if (entities && typeof entities === "object") { 
+        Object.entries(entities).forEach(([type, value]) => { 
+            if (value === null || value === undefined) return; 
+            const values = (Array.isArray(value) ? value : [value]).map(item => typeof item === "object" ? (item.text ?? item.value ?? item.entity ?? item.name ?? "") : item).filter(item => item !== null && item !== undefined && String(item).trim() !== "").map(String); 
+            if (values.length) groups[type] = values; 
+        }); 
+    } 
+    return groups; 
+} 
+ 
+function renderEntities(entities) { 
+    const entries = Object.entries(normalizeEntities(entities)); 
+    if (!entries.length) return `<div class="empty">No entities were returned by the API.</div>`; 
+    return entries.map(([type, values]) => { 
+        const uniqueValues = [...new Set(values)]; 
+        return `<div class="entity-group"><div class="entity-group-header"><div class="entity-group-name">${escapeHtml(type)}</div><div class="entity-count">${uniqueValues.length}</div></div> 
+        <div class="entity-values">${uniqueValues.map(value => `<div class="entity-value-item">${escapeHtml(value)}</div>`).join("")}</div></div>`; 
+    }).join(""); 
+} 
+ 
+function renderDetectedClauses(clauses) { 
+    if (!Array.isArray(clauses) || !clauses.length) return `<div class="empty">No clause details were returned by the API.</div>`; 
+    return clauses.map((clause, index) => { 
+        const risk = clause?.risk_score ?? clause?.risk_level ?? null; 
+        let riskBadge = ""; 
+        if (risk !== null && risk !== undefined && typeof risk === "number") { 
+            const info = getRiskInfo(risk); riskBadge = `<span class="risk-level ${info.className}">${info.score} • ${info.level}</span>`; 
+        } 
+        return `<div class="detected-clause"><div class="detected-clause-header"><div class="detected-clause-left"><div class="clause-number">${index + 1}</div> 
+        <div><div class="detected-clause-title">${escapeHtml(getClauseType(clause))}</div><div class="detected-clause-type">Clause Type</div></div></div> 
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;"> 
+            <span class="confidence-label">Confidence: ${formatConfidence(getClauseConfidence(clause))}</span>${riskBadge} 
+        </div></div><div class="actual-clause-label">ACTUAL CLAUSE TEXT</div> 
+        <div class="actual-clause-text">${getClauseText(clause) ? escapeHtml(getClauseText(clause)) : "No clause text returned by the API."}</div></div>`; 
+    }).join(""); 
+} 
+ 
+function renderAllContracts() { 
+    if (!contracts.length) return `<div class="empty">No contracts available.</div>`; 
+    return `<div class="table-wrap"><table class="all-contracts-table"><thead><tr><th>FILENAME</th><th>STATUS</th><th>RISK</th><th>UPLOADED TIME</th></tr></thead><tbody> 
+        ${contracts.map(contract => { 
+            const status = normalizeStatus(contract), info = getRiskInfo(getContractRisk(contract)); 
+            let statusClass = "processing"; 
+            if (isCompletedContract(contract)) statusClass = "completed"; else if (status.includes("fail") || status.includes("error")) statusClass = "failed"; 
+            return `<tr><td><div class="contract-name">${escapeHtml(getContractName(contract))}</div></td><td><span class="status ${statusClass}">${escapeHtml(status)}</span></td> 
+            <td><span class="risk-level ${info.className}">${info.score} • ${info.level}</span></td><td>${escapeHtml(formatDateTime(getUploadedTime(contract)))}</td></tr>`; 
+        }).join("")}</tbody></table></div>`; 
+} 
+ 
+function renderContractAnalysis(data, contractId) { 
+    const name = data?.filename || data?.file_name || data?.name || data?.title || currentContract?.filename || currentContract?.file_name || `Contract ${contractId}`, score = data?.risk_score ?? data?.riskScore ?? data?.risk?.score ?? data?.risk?.risk_score ?? (typeof data?.risk === "number" ? data.risk : 0), info = getRiskInfo(score); 
+    document.getElementById("analysisTitle").textContent = name; document.getElementById("analysisSubtitle").textContent = `Contract ID: ${contractId}`; 
+    document.getElementById("analysisContent").innerHTML = ` 
+        <div class="card"><div class="card-header"><div><h2>Risk Assessment</h2><p>${escapeHtml(name)}</p></div></div> 
+            <div class="result-risk-summary"> 
+                <div class="result-risk-card"><div class="result-risk-label">RISK SCORE</div><div class="result-risk-score">${info.score}<span> / 100</span></div><div class="result-risk-bar"><div class="result-risk-fill" style="width:${info.score}%;background:${info.color};"></div></div></div> 
+                <div class="result-risk-card"><div class="result-risk-label">RISK LEVEL</div><div class="result-risk-level-row"><div style="font-size:22px;font-weight:800;">${info.title}</div><span class="risk-level ${info.className}">${info.level}</span></div><div class="result-risk-description">${escapeHtml(info.description)}</div></div> 
+            </div> 
+            <div class="risk-layout"> 
+                <div><div class="risk-circle" id="contractRiskCircle" style="--risk-progress:${info.score}%;--risk-color:${info.color};"><div class="risk-center"><div class="risk-number" id="contractRiskScore">${info.score}</div><div class="risk-outof">out of 100</div><div class="risk-level ${info.className}" id="contractRiskLevel">${info.level}</div></div></div></div> 
+                <div class="risk-info"><h3 id="contractRiskTitle">${info.title}</h3><p id="contractRiskDescription">${escapeHtml(info.description)}</p> 
+                    <div class="risk-scale"><div class="scale-row"><span>0</span><span>30</span><span>60</span><span>80</span><span>100</span></div><div class="scale-bar"></div></div> 
+                </div> 
+            </div> 
+        </div> 
+        <div class="card"><div class="card-header"><div><h2>Entities</h2><p>DATE • ORG • MONEY • LAW_JURISDICTION • CLAUSE • etc.</p></div></div><div>${renderEntities(getResultEntities(data))}</div></div> 
+        <div class="card"><div class="card-header"><div><h2>Clauses Detected</h2><p>${getResultClauses(data).length} detected clauses</p></div></div><div>${renderDetectedClauses(getResultClauses(data))}</div></div> 
+        <div class="card"><div class="card-header"><div><h2>All Contracts</h2><p>Uploaded contracts and their analysis status</p></div></div>${renderAllContracts()}</div>`; 
+    updateRiskCircle("contractRiskCircle", "contractRiskScore", "contractRiskLevel", "contractRiskTitle", "contractRiskDescription", score); 
+} 
+ 
+async function deleteContract(contractId) { 
+    if (!confirm("Delete this contract?")) return; 
+    try { 
+        const response = await fetch(`${API_BASE}/v1/contracts/${encodeURIComponent(contractId)}`, { method: "DELETE" }); 
+        if (!response.ok) throw new Error(`HTTP ${response.status}`); 
+        showToast("Contract deleted successfully."); await loadContracts(); showSection("contracts"); 
+    } catch (error) { console.error("Delete error:", error); showToast(`Delete failed: ${error.message}`, 5000); } 
+} 
+ 
+async function loadClauseSearchData() { 
+    const resultsContainer = document.getElementById("clauseSearchResults"); 
+    resultsContainer.innerHTML = `<div class="empty">Loading clauses...</div>`; clauseResults = []; 
+    try { 
+        if (!contracts.length) await loadContracts(); 
+        const completed = contracts.filter(isCompletedContract), filter = document.getElementById("clauseContractFilter"), previousValue = filter.value; 
+        filter.innerHTML = `<option value="">All Contracts</option>`; 
+        completed.forEach(contract => { const id = getContractId(contract); if (id) filter.appendChild(new Option(getContractName(contract), String(id))); }); 
+        if (previousValue && [...filter.options].some(opt => opt.value === previousValue)) filter.value = previousValue; 
+        const requests = completed.map(async contract => { 
+            const id = getContractId(contract); if (!id) return; 
+            try { 
+                const response = await fetch(`${API_BASE}/v1/contracts/${encodeURIComponent(id)}/results`, { cache: "no-store" }); 
+                if (!response.ok) return; 
+                getResultClauses(await response.json()).forEach(clause => { 
+                    clauseResults.push({ contractId: String(id), contractName: getContractName(contract), type: getClauseType(clause), text: getClauseText(clause), confidence: getClauseConfidence(clause), risk: clause?.risk_score ?? (typeof clause?.risk === "number" ? clause.risk : null) }); 
+                }); 
+            } catch (error) { console.warn("Could not load clauses:", id, error); } 
+        }); 
+        await Promise.all(requests); searchClauses(); 
+    } catch (error) { console.error("Clause search error:", error); resultsContainer.innerHTML = `<div class="error-box">Unable to load clause analysis.<br><br>${escapeHtml(error.message)}</div>`; } 
+} 
+ 
+function searchClauses() { 
+    const query = document.getElementById("clauseSearch").value.toLowerCase().trim(), contractFilter = String(document.getElementById("clauseContractFilter").value || ""); 
+    const matches = clauseResults.filter(clause => (!contractFilter || String(clause.contractId) === contractFilter) && (!query || `${clause.type || ""} ${clause.text || ""} ${clause.contractName || ""}`.toLowerCase().includes(query))); 
+    document.getElementById("clauseSearchCount").textContent = `${matches.length} result${matches.length === 1 ? "" : "s"}`; 
+    renderClauseSearchResults(matches); 
+} 
+ 
+function renderClauseSearchResults(matches) { 
+    const container = document.getElementById("clauseSearchResults"); 
+    if (!matches.length) { container.innerHTML = `<div class="empty">No matching clauses found.</div>`; return; } 
+    container.innerHTML = matches.map(clause => { 
+        let riskBadge = ""; 
+        if (clause.risk !== null && clause.risk !== undefined) { const info = getRiskInfo(clause.risk); riskBadge = `<span class="risk-level ${info.className}">${info.score} • ${info.level}</span>`; } 
+        return `<div class="clause-result"><div class="clause-top"><div><div class="clause-type">${escapeHtml(clause.type)}</div><div class="clause-contract">${escapeHtml(clause.contractName)}</div></div> 
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;"> 
+            ${clause.confidence !== null && clause.confidence !== undefined ? `<span class="confidence-label">Confidence: ${formatConfidence(clause.confidence)}</span>` : ""}${riskBadge} 
+        </div></div><div class="clause-text">${escapeHtml(clause.text || "No clause text available.")}</div></div>`; 
+    }).join(""); 
+} 
+ 
+function clearClauseSearch() { document.getElementById("clauseSearch").value = ""; document.getElementById("clauseContractFilter").value = ""; searchClauses(); } 
+ 
+async function refreshCurrentPage() { 
+    const active = document.querySelector(".section.active"); 
+    if (!active) return; await checkApiHealth(); 
+    if (active.id === "dashboard") await loadDashboard(); 
+    else if (active.id === "contracts") await loadContracts(); 
+    else if (active.id === "search") await loadClauseSearchData(); 
+    else if (active.id === "analysis" && currentContract) currentContractId ? await viewContract(currentContractId) : renderContractAnalysis(currentContract, getContractId(currentContract)); 
+    showToast("Page refreshed."); 
+} 
+ 
+async function initialize() { await checkApiHealth(); await loadDashboard(); } 
+initialize(); 
+</script> 
+</body> 
 </html>
