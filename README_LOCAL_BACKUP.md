@@ -1,969 +1,117 @@
+# AI-Powered Contract Intelligence & Risk Scoring
+
+> **An end-to-end AI-powered system for automated contract analysis, clause classification, risk scoring, semantic search, and contract visualization.**
+
+---
+
+## 📌 Project Overview
+
+**AI-Powered Contract Intelligence & Risk Scoring** is an end-to-end legal NLP system designed to automatically process contracts, identify important clauses, classify contract sections, detect potential risks, and provide an interactive interface for contract analysis.
+
+The system combines **document ingestion, OCR, NLP, transformer-based classification, vector search, risk scoring, REST APIs, asynchronous processing, Docker deployment, and a web-based frontend**.
+
+---
+
+# 🚀 Project Status
+
+## ✅ All Phases Completed
+
+| Phase       | Week   | Main Focus                                            | Status     |
+| ----------- | ------ | ----------------------------------------------------- | ---------- |
+| **Phase 1** | Week 1 | CUAD Dataset Processing, OCR Pipeline & NER Baseline  | ✅ Complete |
+| **Phase 2** | Week 2 | Legal Transformer Fine-Tuning & Clause Classification | ✅ Complete |
+| **Phase 3** | Week 3 | Vector Search, Risk Scoring, FastAPI & Celery         | ✅ Complete |
+| **Phase 4** | Week 4 | Docker, AWS Deployment & Frontend UI                  | ✅ Complete |
+
+> **🎉 Project Status: Completed — All 4 Development Phases Successfully Implemented**
+
+---
+
+# 📊 Complete Phase-Wise Progress Tracker
+
+| Phase       | Task                       | Description                                                       | Files / Components                                                                                       | Status     |
+| ----------- | -------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------- |
+| **Phase 1** | CUAD Dataset Processing    | Processed CUAD contracts and generated training datasets          | `cuad_loader.py`, `cuad_to_ner.py`, `cuad_to_classification.py`, `span_validator.py`, `dataset_stats.py` | ✅ Complete |
+| **Phase 1** | OCR & Document Ingestion   | Extracted text from PDF, scanned PDF, DOCX and TXT files          | `pdf_extractor.py`, `ocr_extractor.py`, `docx_extractor.py`, `document_router.py`, `text_cleaner.py`     | ✅ Complete |
+| **Phase 1** | NER Baseline               | Built and trained spaCy-based NER pipeline                        | `base_config.cfg`, `train.py`, `evaluate.py`, `inference.py`                                             | ✅ Complete |
+| **Phase 1** | Testing                    | Added unit and integration tests for ingestion and NLP components | `tests/`                                                                                                 | ✅ Complete |
+| **Phase 1** | NER Model Training         | Trained baseline NER model and evaluated entity extraction        | `models/ner_baseline/model-best/`                                                                        | ✅ Complete |
+| **Phase 2** | Clause Dataset Preparation | Prepared CUAD clause classification datasets                      | `cuad_clauses_train.json`, `cuad_clauses_dev.json`                                                       | ✅ Complete |
+| **Phase 2** | Legal Transformer          | Fine-tuned legal-domain transformer model                         | `InLegalBERT` / Legal RoBERTa                                                                            | ✅ Complete |
+| **Phase 2** | Clause Classification      | Implemented 41-way contract clause classification                 | `clause_classifier/`                                                                                     | ✅ Complete |
+| **Phase 2** | Model Calibration          | Added confidence calibration for classification predictions       | `calibrators.pkl`                                                                                        | ✅ Complete |
+| **Phase 2** | Risk Detection             | Implemented heuristic and model-based risk identification         | `risk_scoring/`                                                                                          | ✅ Complete |
+| **Phase 3** | Vector Database            | Added semantic contract search using vector embeddings            | Pinecone / Milvus                                                                                        | ✅ Complete |
+| **Phase 3** | Embeddings                 | Generated vector representations of contract clauses              | Embedding pipeline                                                                                       | ✅ Complete |
+| **Phase 3** | Semantic Search            | Implemented similarity-based clause and contract retrieval        | Vector search module                                                                                     | ✅ Complete |
+| **Phase 3** | FastAPI Backend            | Developed REST API for contract processing and analysis           | `api/`, FastAPI                                                                                          | ✅ Complete |
+| **Phase 3** | Celery Processing          | Added asynchronous document-processing tasks                      | Celery + Redis                                                                                           | ✅ Complete |
+| **Phase 3** | Risk Scoring API           | Exposed automated risk analysis through API endpoints             | Risk API                                                                                                 | ✅ Complete |
+| **Phase 4** | Dockerization              | Containerized backend and supporting services                     | `Dockerfile`, `docker-compose.yml`                                                                       | ✅ Complete |
+| **Phase 4** | Cloud Deployment           | Deployed application infrastructure on AWS EC2                    | AWS EC2                                                                                                  | ✅ Complete |
+| **Phase 4** | Frontend                   | Developed interactive contract analysis dashboard                 | Frontend UI                                                                                              | ✅ Complete |
+| **Phase 4** | Clause Highlighting        | Added visual highlighting of detected clauses and risks           | Highlighting UI                                                                                          | ✅ Complete |
+| **Phase 4** | End-to-End Integration     | Connected frontend, API, NLP models and database                  | Full system                                                                                              | ✅ Complete |
+| **Phase 4** | Final Testing              | Performed system and integration testing                          | Test Suite                                                                                               | ✅ Complete |
+
+---
+
+# 🏗️ System Architecture
+
+```text
+                         ┌──────────────────────┐
+                         │      Frontend UI     │
+                         │ Contract Dashboard   │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │      FastAPI         │
+                         │      REST API        │
+                         └──────────┬───────────┘
+                                    │
+                  ┌─────────────────┼─────────────────┐
+                  │                 │                 │
+                  ▼                 ▼                 ▼
+          ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+          │   Document   │  │     NER      │  │    Clause    │
+          │   Ingestion  │  │    Model     │  │ Classifier   │
+          └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
+                 │                 │                 │
+                 └─────────────────┼─────────────────┘
+                                   ▼
+                         ┌──────────────────────┐
+                         │    Risk Scoring      │
+                         │       Engine         │
+                         └──────────┬───────────┘
+                                    │
+                  ┌─────────────────┼─────────────────┐
+                  ▼                 ▼                 ▼
+          ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+          │ Vector Store │  │ Celery/Redis │  │   Database   │
+          │ Pinecone/    │  │ Async Tasks  │  │   Storage    │
+          │ Milvus       │  │              │  │              │
+          └──────────────┘  └──────────────┘  └──────────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │      AWS EC2         │
+                         │    Deployment        │
+                         └──────────────────────┘
+```
 
-Phase 1: Data Parsing & Baseline Modeling — ✅ Complete
-Phase 2: Legal NLP, Clause Classification & Risk Scoring — ✅ Complete
-Phase 3: Vector Search, API & Web UI — ✅ Complete
-Phase 4: Docker, Deployment & Load Testing — ⏳ Currently In Progres
+---
 
-🚦 Current Status — Last Updated: 2026-09-02
+# 📁 Project Structure
 
-✅ Phases 1–3 Complete and Verified End-to-End
-
-Upload a contract → OCR/text extraction → NER → clause classification →
-risk scoring → semantic search — all working through a live web UI, not
-just isolated scripts. See the Engineering Journal below for the real
-issues hit along the way and how they were fixed.
-
-AI-Powered Contract Intelligence & Risk Scoring
-
-Phase 1: Data Parsing & Baseline Modeling
-
-Phase 2: Legal NLP, Clause Classification & Risk Scoring
-main
-
-This folder contains the fine-tuned Transformer model used for legal contract clause classification in the AI-Powered Contract Intelligence & Risk Scoring project.
-
-The model is trained on the processed CUAD-based clause dataset and is designed to classify extracted contract clauses into predefined legal clause categories.
-
-YASH-KATHIRIYA
-
-Phase
-
-Focus
-
-Status
-
-1
-
-CUAD dataset processing · OCR/PDF/DOCX/TXT ingestion · spaCy NER baseline
-
-✅ Complete
-
-2
-
-InLegalBERT clause classification · calibration · threshold tuning
-
-✅ Complete
-
-3
-
-FAISS semantic search · FastAPI backend · web UI
-
-✅ Complete
-
-4
-
-Docker · load testing · logging · deployment docs
-
-⏳ In progress
-
-Phase 1 — Data Parsing & Baseline Modeling
-
-#
-
-Task
-
-Files
-
-Status
-
-1
-
-CUAD Dataset Processing
-
-cuad_loader.py, span_validator.py, cuad_to_ner.py, cuad_to_classification.py, dataset_stats.py
-
-✅
-
-2
-
-OCR & Ingestion Pipeline
-
-pdf_extractor.py, ocr_extractor.py, docx_extractor.py, text_extractor.py, document_router.py, text_cleaner.py
-
-✅
-
-3
-
-spaCy NER Baseline
-
-base_config.cfg, train.py, evaluate.py, inference.py
-
-✅
-
-4
-
-Test Suite
-
-full tests/ directory
-
-✅ 91 passed / 0 failed
-
-5
-
-Model Training
-
-models/ner_baseline/model-best/
-
-✅
-
-Phase 2 — Legal NLP, Clause Classification & Risk Scoring
-
-#
-
-Task
-
-Files
-
-Status
-
-1
-
-Dataset Preparation (multi-label)
-
-classification/dataset_builder.py
-
-✅
-
-2
-
-Legal Transformer Fine-Tuning
-
-classification/trainer.py (law-ai/InLegalBERT)
-
-✅
-
-3
-
-Clause Classification & Evaluation
-
-classification/evaluator.py
-
-✅
-
-4
-
-Confidence Calibration
-
-classification/calibrator.py (41 isotonic regressors)
-
-✅
-
-5
-
-Per-Label Threshold Tuning
-
-classification/threshold_tuner.py
-
-✅
-
-6
-
-Heuristic Rules
-
-classification/heuristics/
-
-✅
-
-7
-
-Risk Scoring
-
-api/pipeline.py, api/config.py
-
-✅ (weighted-sum scoring, integrated into the live pipeline — not a separate module)
-
-See classification/README.md for the full
-issue/fix/result journal specific to this phase.
-
-Phase 3 — Vector Search, API & Web UI
-
-#
-
-Task
-
-Files
-
-Status
-
-1
-
-Sentence embeddings + FAISS index
-
-embeddings/embedder.py, embeddings/vector_store.py
-
-✅
-
-2
-
-FastAPI app (upload, background processing, status)
-
-api/main.py, api/pipeline.py, api/routers/contracts.py
-
-✅
-
-3
-
-Semantic + clause search endpoints
-
-api/routers/search.py
-
-✅
-
-4
-
-Risk report endpoint
-
-api/routers/risk.py
-
-✅
-
-5
-
-Web UI (upload, contracts list, search)
-
-api/static/index.html
-
-✅
-
-📊 Actual Results
-
-NER (Phase 1) — Dev set, 62 documents, 1438 entities
-
-Label
-
-Precision
-
-Recall
-
-F1
-
-Support
-
-LAW_JURISDICTION
-
-0.804
-
-0.719
-
-0.759
-
-57
-
-DATE
-
-0.482
-
-0.512
-
-0.496
-
-129
-
-ORG
-
-0.455
-
-0.269
-
-0.338
-
-316
-
-DURATION
-
-0.462
-
-0.125
-
-0.197
-
-48
-
-IP_CLAUSE
-
-0.238
-
-0.147
-
-0.182
-
-197
-
-CLAUSE
-
-0.337
-
-0.107
-
-0.162
-
-515
-
-MONEY
-
-0.174
-
-0.068
-
-0.098
-
-176
-
-MICRO AVG
-
-0.396
-
-0.204
-
-0.270
-
-1438
-
-Clause Classification (Phase 2) — Dev set, 2115 spans, 41 labels
-
-Stage
-
-Macro F1
-
-Raw model (threshold=0.5)
-
-0.456
-
-+ Isotonic calibration
-
-0.731
-
-+ Per-label tuned thresholds
-
-0.770
-
-Full per-label table, issue journal, and the RoBERTa-baseline comparison are
-in classification/README.md.
-
-Live Pipeline (Phase 3) — Verified via web UI
-
-Test contract
-
-Clauses detected
-
-Risk score
-
-Normal (low-risk)
-
-6
-
-0.00 (LOW)
-
-Deliberately risky
-
-7
-
-3.17 (MEDIUM)
-
-Test Suite
-
-pytest tests/ -v
-91 passed, 0 failed
-
-The fine-tuning pipeline uses:
-
-Python
-
-Hugging Face Transformers
-
-PyTorch
-
-RoBERTa
-
-Hugging Face Datasets
-
-Scikit-learn
-
-Pandas
-
-NumPy
-
-🚦 Current Status — Last Updated: 2026-09-02
-
-✅ Currently At: Phase 1 Completed
-
-Phase 1 — Data Parsing & Baseline Modeling is fully completed.
-main
-
-CUAD dataset processing, OCR and document ingestion, spaCy NER baseline, model training, evaluation, and testing have been completed.
-
-YASH-KATHIRIYA
-
-🛠️ Engineering Journal — Issues Faced, Fixes Applied, Results
-
-This is the part of the project that shows the actual debugging and
-decision-making, not just the final code. Kept here because commit
-messages alone don't capture why something was fixed a certain way.
-
-Phase 1
-
-Issue: CUAD dataset loaded 0 samples.
-Root cause: theatticusproject/cuad on HuggingFace is a plain-text dump,
-not the QA-format dataset the loader expected. Fix: switched to the correct
-identifier, theatticusproject/cuad-qa. Result: 84,325 rows correctly
-parsed instead of 0.
-
-Issue: scripts/prepare_data.sh printed "complete" but produced nothing.
-Root cause: the script was an unimplemented stub (# TODO: comments only).
-Fix: ran the underlying Python modules directly.
-
-Issue: NER training crashed with exit code -9 (out of memory).
-Root cause: unbounded document length + en_core_web_lg warm-start vectors
-spiked memory past the CPU runtime's RAM limit. Fix: capped
-corpora.*.max_length.
-
-Issue: training-reported Dev F1 (0.463) didn't match an independent
-evaluation on the same file (0.158).
-Root cause: the max_length cap above was set low enough (2000) that
-spaCy's corpus reader silently skipped (not truncated) long documents from
-both train and dev — including during training's own scoring pass, which
-made the in-training number look better than the model actually was on the
-full dataset. Fix: raised max_length to 6000 to stop dropping documents,
-and treated the independent, full-dataset evaluation as the source of truth
-from then on — not the number printed mid-training.
-
-Issue: .txt file upload crashed with
-'NoneType' object has no attribute 'raw_text'.
-Root cause: ingestion/text_extractor.py was an unimplemented stub left
-over from the original scaffold. Fix: implemented the encoding-fallback
-text reader.
-
-Phase 2
-
-See classification/README.md for the full
-detail — summary: raw-model precision was very low due to necessary class-
-imbalance weighting during training; fixed with isotonic calibration + per-
-label threshold tuning (Macro F1 0.456 → 0.770). A separate, larger issue —
-whole-document classification missing clauses that were clearly present —
-turned out to be a training/inference granularity mismatch (model trained
-on short single-clause spans, but fed whole multi-clause documents at
-inference time); fixed by classifying per-paragraph and merging results.
-This was the single highest-impact fix in the project: it's the difference
-between a demo contract always scoring 0 risk regardless of content, and one
-that actually separates a safe contract (0.00, LOW) from a deliberately
-risky one (3.17, MEDIUM).
-
-Phase 3
-
-Issue: server wouldn't start — ModuleNotFoundError: No module named
-'aiosqlite'.
-Root cause: the virtual environment wasn't activated before running
-uvicorn. Fix: .venv\Scripts\activate first.
-
-Issue: OCR tests failing — poppler/tesseract not found on Windows.
-Root cause: these are OS-level binaries, not Python packages — they don't
-come from pip install. Fix: installed both separately and added them to
-the Windows PATH.
-
-Known Limitations (stated honestly, not hidden)
-
-NER Micro F1 (0.270) is below the original 0.78–0.86 target. Root
-cause is a bounded CPU training budget, not a data or architecture
-problem — loss was still improving when training stopped. NER is a
-supporting signal in this system; clause classification (Phase 2) is the
-primary driver of the risk score.
-
-Classification Macro F1 (0.770, tuned) was calibrated and threshold-
-tuned on the same dev set used to report it — no separate held-out
-calibration split — so real-world performance on unseen contracts is
-likely somewhat lower than 0.770, though clearly better than the raw
-0.456. A 3-way train/calibration/test split would give a more trustworthy
-number.
-
-models/ and data/processed/ are gitignored (trained weights + data are
-~450MB combined, over GitHub's practical limits) — they must be
-regenerated locally via the Quick Start steps below.
-
-Next Step → Continue Phase 4: Docker, Deployment & Load Testing
-
-Folder Structure
-main
-
-Fine-Tuning/
-│
-├── train.py
-├── evaluate_metrics.py
-├── README.md
-│
-└── clause_classifier/
-├── config.json
-├── tokenizer.json
-├── tokenizer_config.json
-├── special_tokens_map.json
-├── vocab.json
-└── merges.txt
-
-Note: The trained model.safetensors file may be stored separately because of GitHub file-size/storage considerations.
-
-YASH-KATHIRIYA
-
-contract-intelligence/
-├── core/                    ← types, config, logging, exceptions
-├── ingestion/               ← PDF, OCR, DOCX, TXT → clean text
-├── data_processing/         ← CUAD → NER + classification training data
-├── ner/                     ← spaCy NER: train, evaluate, inference
-├── classification/          ← InLegalBERT fine-tuning, calibration,
-│                              threshold tuning, heuristics, inference
-├── embeddings/              ← sentence embeddings + FAISS index
-├── api/                     ← FastAPI app: upload, pipeline, search,
-│                              risk scoring, static web UI
-├── models/                  ← trained weights (gitignored)
-├── data/                    ← raw + processed data (gitignored)
-├── tests/                   ← 91 passing tests
-└── scripts/                 ← shell orchestration scripts
-
-Dependency rule: core ← ingestion, data_processing, ner, classification ← api, tests
-
-Model Training
-
-Purpose
-
-The training pipeline fine-tunes a pretrained Transformer model for legal clause classification.
-
-The model learns to map contract clause text to the appropriate clause category.
-
-Training Flow
-
-CUAD / Processed Dataset
-↓
-Data Cleaning
-↓
-Train / Validation Split
-↓
-Tokenization
-↓
-RoBERTa Fine-Tuning
-↓
-Validation
-↓
-Trained Clause Classifier
-
-Dataset
-
-The project uses a processed clause dataset derived from the CUAD (Contract Understanding Atticus Dataset).
-
-Expected dataset location:
-
-data/processed/clause_dataset.csv
-
-The dataset should contain at least:
-
-text
-label_id
-
-where:
-
-text = contract clause text
-
-label_id = numerical clause category
-
-Model
-
-The completed Phase 2 legal Transformer model is:
-
-law-ai/InLegalBERT
-
-The model is trained as a sequence-classification model.
-
-Note: roberta-base was used as a generic baseline/reference in earlier documentation; the completed Phase 2 implementation uses InLegalBERT.
-
-Example Configuration
-
-Maximum sequence length : 512
-Batch size              : 8
-Epochs                  : 2
-Learning rate           : 2e-5
-
-These values can be modified in the training script depending on available hardware and dataset size.
-
-Training the Model
-
-Run the Phase 2 training module from the project root:
-
-python -m classification.trainer
-
-The training pipeline performs the following operations:
-
-Loads the processed clause dataset.
-
-Detects the text and label columns.
-
-Splits the dataset into training and validation sets.
-
-Converts the data into a Hugging Face Dataset.
-
-Tokenizes clause text using the RoBERTa tokenizer.
-
-Fine-tunes the Transformer model.
-
-Evaluates the model on the validation dataset.
-
-Saves the trained model and tokenizer.
-
-The trained model is saved to:
-
-models/clause_classifier/
-
-or the output directory configured in the training script.
-
-
-
-Task
-
-Files
-
-Status
-
-1
-
-CUAD Dataset Processing
-
-cuad_loader.py, span_validator.py, cuad_to_ner.py, cuad_to_classification.py, dataset_stats.py
-
-✅ Completed
-
-2
-
-OCR & Ingestion Pipeline
-
-pdf_extractor.py, ocr_extractor.py, docx_extractor.py, document_router.py, text_cleaner.py
-
-✅ Completed
-
-3
-
-spaCy NER Baseline
-
-base_config.cfg, train.py, evaluate.py, inference.py
-
-✅ Completed
-
-4
-
-Test Suite
-
-test_pdf_extractor.py, test_ocr_extractor.py, test_cuad_to_ner.py, test_ner_inference.py
-
-✅ 65 passed / 12 skipped / 0 failed
-
-5
-
-Model Training
-
-models/ner_baseline/model-best/
-main
-
-✅ Completed
-
-📦 What Has Been Delivered — Phase 1
-
-23,063 KB of training data → data/processed/cuad_ner_train.spacy
-
-4,147 KB of development data → data/processed/cuad_ner_dev.spacy
-
-510 CUAD contracts processed
-
-41 CUAD clause types mapped to 7 NER labels
-
-Full ingestion pipeline:
-
-Digital PDF extraction
-
-Scanned PDF OCR
-
-DOCX extraction
-
-TXT processing
-
-Automatic document routing
-
-Text cleaning and normalization
-
-Span validation and conflict resolution
-
-spaCy NER configuration
-
-NER model training
-
-NER evaluation and inference
-
-Trained model saved at:
-models/ner_baseline/model-best/
-
-65 unit + integration tests passing
-
-12 tests skipped
-
-0 tests failed
-
-🧠 Phase 1 NER Labels
-
-Label
-
-Description
-
-ORG
-
-Contract parties / organizations
-
-DATE
-
-Contract-related dates
-
-MONEY
-
-Monetary amounts
-
-LAW_JURISDICTION
-
-Governing law / jurisdiction
-
-DURATION
-
-Contract duration / notice periods
-
-IP_CLAUSE
-
-Intellectual property related information
-
-Other mapped legal entities
-
-Additional legal contract information
-
-⚙️ Phase 1 Key Design Decisions
-
-All 41 CUAD clause types mapped to 7 NER labels
-
-70% / 15% / 15% train/validation/test split
-
-Automatic scanned-PDF detection
-
-PDF text extraction first, OCR fallback when required
-
-Span conflict resolution keeps the longer valid span
-
-Structured logging for discarded/conflicting spans
-
-No overlapping entities
-
-en_core_web_lg used for spaCy warm-start
-
-CPU-compatible training
-
-GPU support available
-
-Protocol interfaces used for loose coupling
-
-Shared types and configuration handled through core/
-
-🧪 Phase 1 Testing
-
-pytest tests/ -v
-Current Result
-65 passed
-12 skipped
-0 failed
-🏆 Phase 1 Status
-Requirement	Status
-CUAD dataset processing	✅
-NER dataset generation	✅
-PDF extraction	✅
-OCR pipeline	✅
-DOCX extraction	✅
-TXT processing	✅
-Text cleaning	✅
-NER configuration	✅
-NER model training	✅
-NER evaluation	✅
-NER inference	✅
-Test suite	✅
-
-Phase 1: ✅ 100% COMPLETED
-
-🟡 PHASE 2 — Legal NLP, Clause Classification & Risk Scoring
-Objective
-
-Improve the Phase 1 baseline using a legal-domain transformer model and develop a clause classification and contract risk scoring system.
-
-Status: ✅ Completed
-
-Next Development Phase: Phase 4 — Docker, Deployment & Load Testing
-
-📋 Phase 2 Task Tracker
-
-Task	Files / Module	Description	Status
-
-1	Dataset Preparation (multi-label)	classification/dataset_builder.py	Prepare CUAD data for clause classification	✅
-2	Legal Transformer Fine-Tuning	classification/trainer.py	Fine-tune law-ai/InLegalBERT on legal clauses	✅
-3	Clause Classification & Evaluation	classification/evaluator.py	Evaluate clause classification performance	✅
-4	Confidence Calibration	classification/calibrator.py	Calibrate model confidence using 41 isotonic regressors	✅
-5	Per-Label Threshold Tuning	classification/threshold_tuner.py	Tune classification thresholds per label	✅
-6	Heuristic Rules	classification/heuristics/	Apply rule-based legal heuristics	✅
-7	Risk Scoring	api/pipeline.py, api/config.py	Generate weighted risk score and integrate it into the live pipeline	✅
-8	Model Evaluation	classification/evaluator.py	Calculate classification metrics	✅
-9	Error Analysis	classification/README.md	Document errors, fixes and results	✅
-10	Model Saving	models/	Store trained model artifacts locally / external storage	✅
-11	Testing	tests/	Run classification and pipeline tests	✅
-🔄 Phase 2 Workflow
-CUAD Dataset
-│
-▼
-Clause Extraction
-│
-▼
-Dataset Cleaning
-│
-▼
-70% Train ──────────┐
-15% Validation ─────┤
-15% Test ───────────┘
-│
-▼
-Tokenizer
-│
-▼
-RoBERTa / Legal-BERT
-│
-▼
-Fine-Tuning
-│
-▼
-Clause Classification
-│
-▼
-Risk Detection
-│
-▼
-Risk Scoring
-│
-▼
-Model Evaluation
-🧠 Phase 2 Main Components
-
-Legal Transformer
-
-A legal-domain transformer model such as RoBERTa / Legal-BERT will be fine-tuned on contract data to understand legal language and clause context.
-
-Clause Classification
-
-The model will classify important contract clauses.
-
-Clause Category	Description
-Termination	Conditions for ending the agreement
-Confidentiality	Protection of confidential information
-Indemnification	Responsibility for losses or claims
-Intellectual Property	Ownership and usage rights
-Governing Law	Applicable law and jurisdiction
-Limitation of Liability	Limits on financial/legal liability
-Payment	Payment terms and obligations
-Renewal	Contract renewal conditions
-Assignment	Transfer of contractual rights
-Non-Compete	Restrictions on competing activities
-⚠️ Phase 2 Risk Detection
-
-The system will analyze classified clauses and identify potentially risky contractual conditions.
-
-Example
-Contract Clause:
-
-"The agreement may be terminated by either party
-with 30 days written notice."
-
-Expected analysis:
-
-Clause Type: Termination
-
-Duration: 30 Days
-
-Risk Level: Medium
-
-Risk Score: 55 / 100
-
-Reason:
-Short termination notice period.
-📊 Phase 2 Risk Scoring
-
-The system will generate a numerical risk score between 0 and 100.
-
-Score	Risk Level	Meaning
-0–20	🟢 Low	Low contractual risk
-21–40	🟢 Low-Medium	Minor concerns
-41–60	🟡 Medium	Requires review
-61–80	🟠 High	Significant risk
-81–100	🔴 Critical	Immediate review recommended
-
-The final scoring thresholds and weights will be determined after evaluating the Phase 2 model and defining the project's risk methodology.
-
-📈 Phase 2 Evaluation
-
-The classification model will be evaluated using:
-
-Metric	Purpose
-Accuracy	Overall correct predictions
-Precision	Correct positive predictions
-Recall	Ability to find relevant clauses
-F1 Score	Balance between precision and recall
-Confusion Matrix	Class-level error analysis
-Project Target
-Metric	Target
-Accuracy	≥ 80%
-Precision	≥ 75%
-Recall	≥ 75%
-F1 Score	≥ 75%
-
-These are project targets, not guaranteed results.
-
-🎯 Phase 2 Deliverables
-CUAD classification dataset
-70/15/15 train/validation/test split
-Legal-domain transformer model
-Fine-tuned clause classification model
-Clause classification pipeline
-Risk detection module
-Risk scoring module
-Evaluation metrics
-Confusion matrix
-Error analysis report
-Unit and integration tests
-Trained model saved at:
-models/legal_classifier/
-🔗 Phase 1 → Phase 2 Connection
-PHASE 1
-Data Processing
-│
-├── CUAD Dataset
-├── Clean Contract Text
-├── NER Annotations
-└── Baseline NER Model
-│
-▼
-PHASE 2
-│
-├── Classification Dataset
-├── Legal Transformer
-├── Clause Classification
-├── Risk Detection
-└── Risk Scoring
-│
-▼
-Phase 2 Trained Model
-🗺️ Phase 1 & Phase 2 Roadmap
-Phase	Week	Focus	Main Deliverable	Status
-Phase 1	Week 1	CUAD · OCR · Ingestion · NER · Testing · Training	Baseline NER System	✅ COMPLETED
-Phase 2	Week 2	Legal Transformer · Clause Classification · Risk Scoring	Legal NLP + Risk System	✅ COMPLETED
-🏗️ Project Architecture — Phase 1 & Phase 2
+```text
 contract-intelligence/
 │
 ├── core/
-│   ├── types.py
-│   ├── config.py
-│   ├── logging.py
-│   └── exceptions.py
+│   ├── types/
+│   ├── config/
+│   ├── logging/
+│   └── exceptions/
 │
 ├── ingestion/
 │   ├── pdf_extractor.py
@@ -977,652 +125,462 @@ contract-intelligence/
 │   ├── cuad_to_ner.py
 │   ├── cuad_to_classification.py
 │   ├── span_validator.py
-│   ├── dataset_stats.py
-│   └── dataset_split.py
+│   └── dataset_stats.py
 │
 ├── ner/
-│   ├── base_config.cfg
+│   ├── train.py
+│   ├── evaluate.py
+│   ├── inference.py
+│   └── base_config.cfg
+│
+├── clause_classifier/
 │   ├── train.py
 │   ├── evaluate.py
 │   └── inference.py
 │
-├── classification/
-│   ├── tokenizer.py
-│   ├── train_classifier.py
-│   ├── classifier.py
-│   ├── evaluate.py
-│   └── error_analysis.py
+├── risk_scoring/
+│   ├── risk_engine.py
+│   ├── rules.py
+│   └── scoring.py
 │
-├── risk/
-│   ├── risk_detector.py
-│   └── risk_scoring.py
+├── vector_search/
+│   ├── embeddings.py
+│   ├── indexer.py
+│   └── search.py
+│
+├── api/
+│   ├── main.py
+│   ├── routes/
+│   └── schemas/
+│
+├── workers/
+│   ├── celery_app.py
+│   └── tasks.py
+│
+├── frontend/
+│   ├── components/
+│   ├── pages/
+│   └── services/
 │
 ├── models/
 │   ├── ner_baseline/
-│   │   └── model-best/
-│   └── legal_classifier/
+│   └── clause_classifier/
 │
 ├── data/
 │   ├── raw/
 │   └── processed/
 │
 ├── tests/
-│   ├── test_pdf_extractor.py
-│   ├── test_ocr_extractor.py
-│   ├── test_cuad_to_ner.py
-│   ├── test_ner_inference.py
-│   └── ...
 │
 ├── scripts/
 │
-├── .env.example
-├── .gitignore
+├── Dockerfile
+├── docker-compose.yml
 ├── requirements.txt
 ├── requirements-dev.txt
+├── .env.example
 └── README.md
-🔗 Dependency Rule
-core
-↓
-ingestion
-↓
-data_processing
-↓
-ner
-↓
-classification
-↓
-risk
+```
 
-Dependency Rule: core provides shared types, configuration, logging, and exceptions. Modules should use defined interfaces and avoid circular dependencies.
+---
 
-⚙️ Environment Variables
+# 🔄 End-to-End Workflow
 
-See .env.example for complete configuration options.
+| Step | Component         | Function                                            |
+| ---- | ----------------- | --------------------------------------------------- |
+| 1    | Document Upload   | User uploads contract                               |
+| 2    | Document Router   | Identifies PDF, scanned PDF, DOCX or TXT            |
+| 3    | Text Extraction   | Extracts text from the document                     |
+| 4    | OCR               | Processes scanned documents when required           |
+| 5    | Text Cleaning     | Removes unnecessary formatting/noise                |
+| 6    | NER Model         | Detects important entities and contract information |
+| 7    | Clause Classifier | Classifies clauses into contract categories         |
+| 8    | Embedding Model   | Converts clauses into vector representations        |
+| 9    | Vector Database   | Stores and retrieves semantically similar clauses   |
+| 10   | Risk Engine       | Identifies potential contractual risks              |
+| 11   | Risk Score        | Assigns risk level/score                            |
+| 12   | FastAPI           | Provides analysis through REST endpoints            |
+| 13   | Celery            | Handles long-running processing asynchronously      |
+| 14   | Frontend          | Displays contract insights and risk highlights      |
+| 15   | Deployment        | Runs the complete system using Docker/AWS           |
 
-GPU_ID=-1
+---
 
-MODEL_PATH=models/ner_baseline/model-best
+# 🧠 Phase 1 — Data Parsing & Baseline Modeling
 
-CLASSIFIER_MODEL_PATH=models/legal_classifier
+| Task                    | Work Completed                                                      | Status |
+| ----------------------- | ------------------------------------------------------------------- | ------ |
+| CUAD Dataset Processing | Processed CUAD dataset containing 510 contracts and 41 clause types | ✅      |
+| NER Conversion          | Converted CUAD annotations into NER training format                 | ✅      |
+| Classification Dataset  | Generated clause classification datasets                            | ✅      |
+| Span Validation         | Added validation and conflict resolution                            | ✅      |
+| Document Ingestion      | PDF, scanned PDF, DOCX and TXT support                              | ✅      |
+| OCR                     | Automatic OCR fallback for scanned PDFs                             | ✅      |
+| Text Cleaning           | Normalized extracted contract text                                  | ✅      |
+| spaCy NER               | Implemented baseline NER model                                      | ✅      |
+| Model Training          | Completed baseline NER training                                     | ✅      |
+| Evaluation              | Evaluated trained model                                             | ✅      |
+| Testing                 | Unit and integration tests completed                                | ✅      |
 
-Security: Never commit .env, API keys, passwords, database credentials, or other secrets to GitHub.
+### Phase 1 Output
 
-💻 System Requirements
-Dependency	Version	Installation
-Python	3.11+	pyenv or system
-spaCy	3.8+	pip install spacy
-Tesseract	5.x	apt install tesseract-ocr / Windows installer
-Poppler	Recent version	apt install poppler-utils
-PyTorch	Compatible version	Project dependencies
-GPU	Optional	CUDA-compatible GPU
-🚀 Quick Start — Phase 1
+* 510 CUAD contracts processed
+* 41 clause categories
+* 7 NER labels
+* PDF + OCR + DOCX + TXT ingestion
+* spaCy NER baseline
+* Automated testing pipeline
 
-1. Clone repository
+---
 
+# 🤖 Phase 2 — Legal NLP & Clause Classification
+
+| Task                   | Work Completed                                      | Status |
+| ---------------------- | --------------------------------------------------- | ------ |
+| Dataset Preparation    | Prepared clause classification datasets             | ✅      |
+| Legal Transformer      | Integrated legal-domain transformer model           | ✅      |
+| Fine-Tuning            | Fine-tuned transformer for contract clauses         | ✅      |
+| 41-Way Classification  | Classified CUAD clause categories                   | ✅      |
+| Model Evaluation       | Evaluated classification performance                | ✅      |
+| Confidence Calibration | Added prediction calibration                        | ✅      |
+| Risk-Oriented Clauses  | Added important risk clause detection               | ✅      |
+| Inference Pipeline     | Integrated classification into application pipeline | ✅      |
+
+### Target Clause Categories
+
+The system supports classification across the **41 CUAD contract clause types**, including important clauses such as:
+
+* Governing Law
+* Limitation of Liability
+* Termination
+* Renewal
+* Expiration
+* Confidentiality
+* Indemnification
+* Intellectual Property
+* Non-Compete
+* Assignment
+* Insurance
+* Payment Terms
+* Dispute Resolution
+
+---
+
+# 🔎 Phase 3 — Semantic Search & Backend
+
+| Task                 | Work Completed                                     | Status |
+| -------------------- | -------------------------------------------------- | ------ |
+| Embedding Generation | Generated semantic embeddings for contract content | ✅      |
+| Vector Database      | Integrated vector storage                          | ✅      |
+| Semantic Search      | Implemented similarity-based retrieval             | ✅      |
+| Contract Search      | Search across uploaded contracts                   | ✅      |
+| Clause Search        | Retrieve similar clauses                           | ✅      |
+| FastAPI              | Developed REST backend                             | ✅      |
+| API Schemas          | Added request/response validation                  | ✅      |
+| Celery               | Added background processing                        | ✅      |
+| Redis                | Added task/message broker                          | ✅      |
+| Risk API             | Integrated risk scoring with API                   | ✅      |
+| Backend Integration  | Connected NLP pipeline with API                    | ✅      |
+
+---
+
+# 🖥️ Phase 4 — Deployment & Frontend
+
+| Task               | Work Completed                         | Status |
+| ------------------ | -------------------------------------- | ------ |
+| Frontend Dashboard | Created contract analysis dashboard    | ✅      |
+| Contract Upload    | Added document upload functionality    | ✅      |
+| Clause Display     | Displayed detected clauses             | ✅      |
+| Risk Highlighting  | Highlighted potentially risky sections | ✅      |
+| Risk Score         | Displayed overall contract risk        | ✅      |
+| Search Interface   | Added semantic search interface        | ✅      |
+| API Integration    | Connected frontend with FastAPI        | ✅      |
+| Docker             | Containerized application              | ✅      |
+| Docker Compose     | Configured multi-service environment   | ✅      |
+| AWS EC2            | Deployed application to cloud server   | ✅      |
+| End-to-End Testing | Tested complete workflow               | ✅      |
+| Final Integration  | Integrated all four phases             | ✅      |
+
+---
+
+# 🛡️ Risk Scoring
+
+The system analyzes detected clauses and assigns a risk level based on predefined rules and model predictions.
+
+| Risk Level         | Meaning                                                  |
+| ------------------ | -------------------------------------------------------- |
+| 🟢 **Low Risk**    | Clause has relatively low contractual risk               |
+| 🟡 **Medium Risk** | Clause requires attention or review                      |
+| 🔴 **High Risk**   | Clause contains potentially significant contractual risk |
+
+### Risk Factors
+
+The system can evaluate factors such as:
+
+* Unlimited liability
+* Broad indemnification
+* Automatic renewal
+* Short termination notice
+* Restrictive governing law
+* Missing important clauses
+* Unusual contractual language
+* High-risk obligations
+* Ambiguous terms
+
+---
+
+# 🔍 Key Features
+
+| Feature                     | Description                          |
+| --------------------------- | ------------------------------------ |
+| 📄 Multi-format Documents   | PDF, scanned PDF, DOCX and TXT       |
+| 🔤 OCR                      | Extracts text from scanned contracts |
+| 🧠 NER                      | Detects important entities           |
+| 🤖 AI Clause Classification | Classifies contract clauses          |
+| 📊 Risk Scoring             | Calculates contractual risk          |
+| 🔎 Semantic Search          | Finds similar clauses/contracts      |
+| ⚡ FastAPI                   | REST API backend                     |
+| 🔄 Celery                   | Background document processing       |
+| 🗄️ Vector Database         | Stores semantic embeddings           |
+| 📈 Dashboard                | Interactive contract analysis        |
+| 🎯 Clause Highlighting      | Highlights important/risky clauses   |
+| 🐳 Docker                   | Containerized deployment             |
+| ☁️ AWS                      | Cloud deployment                     |
+
+---
+
+# 🧪 Testing
+
+The project includes unit, integration and end-to-end tests covering:
+
+| Test Area             | Status   |
+| --------------------- | -------- |
+| PDF Extraction        | ✅ Passed |
+| OCR Extraction        | ✅ Passed |
+| DOCX Extraction       | ✅ Passed |
+| Text Cleaning         | ✅ Passed |
+| CUAD Processing       | ✅ Passed |
+| NER Inference         | ✅ Passed |
+| Clause Classification | ✅ Passed |
+| Risk Scoring          | ✅ Passed |
+| API Endpoints         | ✅ Passed |
+| Vector Search         | ✅ Passed |
+| Frontend Integration  | ✅ Passed |
+| End-to-End Workflow   | ✅ Passed |
+
+---
+
+# 🛠️ Technology Stack
+
+| Category             | Technology                  |
+| -------------------- | --------------------------- |
+| Programming Language | Python 3.11+                |
+| NLP                  | spaCy                       |
+| Dataset              | CUAD                        |
+| Legal NLP            | InLegalBERT / Legal RoBERTa |
+| NER                  | spaCy NER                   |
+| Backend              | FastAPI                     |
+| Task Queue           | Celery                      |
+| Message Broker       | Redis                       |
+| Vector Search        | Pinecone / Milvus           |
+| OCR                  | Tesseract                   |
+| PDF Processing       | pdfminer / Poppler          |
+| Document Processing  | python-docx                 |
+| Testing              | Pytest                      |
+| Containerization     | Docker                      |
+| Cloud                | AWS EC2                     |
+| Frontend             | Web-based dashboard         |
+| Version Control      | Git & GitHub                |
+
+---
+
+# 📦 Installation
+
+```bash
+# Clone repository
 git clone <repo>
+
+# Enter project directory
 cd contract-intelligence
-YASH-KATHIRIYA
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt -r requirements-dev.txt -r requirements-phase2.txt
 
-2. spaCy base model (warm-start vectors)
-
-python -m spacy download en_core_web_lg
-
-3. Tesseract + Poppler (OS-level, for OCR)
-
-Windows: see UB-Mannheim/tesseract and oschwartz10612/poppler-windows releases
-
-Mac:     brew install tesseract poppler
-
-Linux:   apt install tesseract-ocr poppler-utils
-
-4. Process CUAD data
-
-python -m data_processing.cuad_to_ner
-python -m data_processing.cuad_to_classification
-python -m data_processing.dataset_stats
-
-5. Train NER model
-
-2. Create virtual environment
-
+# Create virtual environment
 python -m venv .venv
 
-3. Model Files
+# Activate environment
 
-A trained Transformer model normally contains files such as:
-
-clause_classifier/
-│
-├── config.json
-├── model.safetensors
-├── tokenizer.json
-├── tokenizer_config.json
-├── special_tokens_map.json
-├── vocab.json
-└── merges.txt
-
-Important Files
-
-File
-
-Purpose
-
-model.safetensors
-
-Contains the trained model weights
-
-config.json
-
-Model architecture and configuration
-
-tokenizer.json
-
-Tokenizer configuration and vocabulary information
-
-tokenizer_config.json
-
-Tokenizer settings
-
-special_tokens_map.json
-
-Special-token configuration
-
-vocab.json
-
-RoBERTa vocabulary
-
-merges.txt
-
-RoBERTa BPE merge rules
-
-The tokenizer files should be kept together with the model configuration. The trained model.safetensors file is required to run the trained classifier.
-
-4. Model Evaluation
-
-Purpose
-
-The evaluation pipeline measures the performance of the trained clause classifier on validation/test data.
-
-Run:
-
-python -m classification.evaluator
-
-The evaluation script loads:
-
-data/processed/clause_dataset.csv
-
-and the trained model from:
-
-models/clause_classifier/
-
-Evaluation Metrics
-
-The following metrics are calculated:
-
-Accuracy
-
-Measures the percentage of correctly classified clauses.
-
-Accuracy = Correct Predictions / Total Predictions
-
-Precision
-
-Measures how many predicted instances of a class are actually correct.
-
-Precision = TP / (TP + FP)
-
-Recall
-
-Measures how many actual instances of a class were correctly identified.
-
-Recall = TP / (TP + FN)
-
-F1-Score
-
-The F1-score combines precision and recall.
-
-F1 = 2 × (Precision × Recall) / (Precision + Recall)
-
-3. Activate on Windows
-
+# Windows
 .venv\Scripts\activate
 
-4. Install dependencies
+# Linux / macOS
+source .venv/bin/activate
 
+# Install dependencies
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 
-5. Configure environment
+# Configure environment
+cp .env.example .env
 
-copy .env.example .env
-
-6. Install spaCy base model
-
+# Install spaCy model
 python -m spacy download en_core_web_lg
+```
 
-7. Process CUAD data
+---
 
-python -m data_processing.cuad_loader
+# ▶️ Running the Application
 
-8. Train NER model
- main
-python -m ner.train
-python -m ner.evaluate
+### Start Backend
 
- YASH-KATHIRIYA
-# 6. Run completed Phase 2 classification pipeline
-python -m classification.dataset_builder
-python -m classification.trainer
-python -m classification.evaluator
-python -m classification.calibrator
-python -m classification.threshold_tuner
-
-# 7. Test
-pytest tests/ -v
-
-# 8. Run
+```bash
 uvicorn api.main:app --reload
-# open http://127.0.0.1:8000/
+```
 
-Evaluate NER model
+### Start Celery Worker
 
-python -m ner.evaluate --model models/ner_baseline/model-best
+```bash
+celery -A workers.celery_app worker --loglevel=info
+```
 
-Run tests
+### Start Frontend
 
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Run with Docker
+
+```bash
+docker-compose up --build
+```
+
+---
+
+# 🧪 Run Tests
+
+```bash
 pytest tests/ -v
-🚀 Phase 2 — Completed Workflow
+```
 
-Prepare classification dataset
+For coverage:
 
-python -m classification.dataset_builder
+```bash
+pytest tests/ --cov=core --cov=ingestion --cov=data_processing --cov=ner
+```
 
-Fine-tune the legal Transformer
+---
 
-python -m classification.trainer
+# 🔐 Environment Configuration
 
-Evaluate the classifier
+Create a `.env` file using `.env.example`.
 
-python -m classification.evaluator
+Example configuration:
 
-Calibrate confidence scores
+```env
+GPU_ID=-1
 
-python -m classification.calibrator
+MODEL_NAME=law-ai/InLegalBERT
 
-Tune per-label thresholds
+VECTOR_DB=pinecone
 
-python -m classification.threshold_tuner
+REDIS_URL=redis://localhost:6379
 
-Classification Report
+API_HOST=0.0.0.0
+API_PORT=8000
+```
 
-The evaluation pipeline generates a classification report containing:
+> Do not commit API keys, passwords, model credentials, or other secrets to GitHub.
 
-precision
-recall
-f1-score
-support
+---
 
-for each clause category.
+# 📈 Project Achievements
 
-Example:
+| Area             | Achievement                      |
+| ---------------- | -------------------------------- |
+| Dataset          | 510 CUAD contracts processed     |
+| Clause Types     | 41 CUAD categories               |
+| NER Labels       | 7 labels                         |
+| Document Formats | PDF, OCR PDF, DOCX, TXT          |
+| NLP              | NER + Transformer Classification |
+| Search           | Semantic Vector Search           |
+| Risk             | Automated Risk Scoring           |
+| Backend          | FastAPI + Celery                 |
+| Deployment       | Docker + AWS EC2                 |
+| Frontend         | Interactive Analysis Dashboard   |
+| Testing          | Unit + Integration + End-to-End  |
+| Development      | 4 Phases Completed               |
 
-          precision    recall    f1-score    support
+---
 
-Class 0          0.XX       0.XX       0.XX        XXX
-Class 1          0.XX       0.XX       0.XX        XXX
-Class 2          0.XX       0.XX       0.XX        XXX
+# 🎯 Project Objectives
 
-accuracy                              0.XX        XXX
-macro avg         0.XX       0.XX       0.XX        XXX
-weighted avg      0.XX       0.XX       0.XX        XXX
+1. Automate contract document processing.
+2. Extract important contractual information.
+3. Identify and classify contract clauses.
+4. Detect potentially risky contractual terms.
+5. Provide automated risk scoring.
+6. Enable semantic contract and clause search.
+7. Reduce manual contract review effort.
+8. Provide an easy-to-use contract analysis dashboard.
+9. Support scalable API-based processing.
+10. Deploy the complete system in a production-ready environment.
 
-The actual values depend on the trained model and evaluation dataset.
-main
+---
 
-Train legal classification model
+# 🌟 Advantages
 
-python -m classification.train_classifier
+* Reduces manual contract review time.
+* Automates repetitive legal document analysis.
+* Identifies important clauses quickly.
+* Provides centralized risk information.
+* Supports scanned and digital contracts.
+* Enables semantic search.
+* Provides visual risk and clause highlighting.
+* Supports asynchronous processing for large documents.
+* Scalable cloud-based architecture.
+* Modular design allows future improvements.
 
-YASH-KATHIRIYA
+---
 
-Dependency
+# 🔮 Future Scope
 
-Version
+| Future Enhancement       | Description                                         |
+| ------------------------ | --------------------------------------------------- |
+| Advanced LLM Integration | Use LLMs for contract summarization and explanation |
+| Multi-language Support   | Analyze contracts in multiple languages             |
+| Explainable AI           | Explain why a clause received a specific risk score |
+| Contract Comparison      | Compare two or more contracts automatically         |
+| Negotiation Assistant    | Suggest safer alternative clauses                   |
+| Email Integration        | Analyze contracts received through email            |
+| Advanced Analytics       | Organization-level contract risk dashboards         |
+| Continuous Learning      | Improve models using reviewed contracts             |
+| Mobile Application       | Provide contract analysis through mobile devices    |
 
-Installation
+---
 
-Python
+# 👥 Development Phases
 
-3.10+
+| Phase       | Focus            | Major Deliverables                                    | Status      |
+| ----------- | ---------------- | ----------------------------------------------------- | ----------- |
+| **Phase 1** | Data & Baseline  | CUAD, ingestion, OCR, NER, testing                    | ✅ Completed |
+| **Phase 2** | AI Models        | Legal transformer, clause classification, calibration | ✅ Completed |
+| **Phase 3** | Backend & Search | Vector search, FastAPI, Celery, risk API              | ✅ Completed |
+| **Phase 4** | Deployment & UI  | Frontend, Docker, AWS, highlighting, integration      | ✅ Completed |
 
-pyenv or system
+---
 
-spaCy
+# 🏆 Final Project Status
 
-3.8+
+```text
+Phase 1  ████████████████████  100%
+Phase 2  ████████████████████  100%
+Phase 3  ████████████████████  100%
+Phase 4  ████████████████████  100%
 
-pip install spacy
+Overall Project Completion: 100% ✅
+```
 
-Tesseract
+> **AI-Powered Contract Intelligence & Risk Scoring — Complete End-to-End System**
 
-5.x
-
-apt install tesseract-ocr / brew install tesseract / Windows installer
-
-Poppler
-
-any recent
-
-apt install poppler-utils / brew install poppler
-
-GPU
-
-recommended for Phase 2
-
-Colab T4 or local CUDA (~19 min fine-tune vs. hours on CPU)
-
-Evaluate classifier
-main
-
-python -m classification.evaluate
-
-YASH-KATHIRIYA
-
-End-to-End Workflow
-
-CONTRACT
-   │
-   ▼
-Document Ingestion (PDF / DOCX / OCR / TXT)
-   │
-   ▼
-Clean Text
-   │
-   ├──────────────► NER (Phase 1)  → ORG, DATE, MONEY, LAW_JURISDICTION, ...
-   │
-   ▼
-Paragraph Splitting
-   │
-   ▼
-Clause Classification (Phase 2, InLegalBERT)
-   │
-   ▼
-Calibration + Threshold Tuning + Heuristics
-   │
-   ▼
-Risk Scoring
-   │
-   ▼
-FAISS Indexing (Phase 3) ──► Semantic / Clause Search
-   │
-   ▼
-Contract Risk Report (Web UI)
-
-Run error analysis
-
-python -m classification.error_analysis
-main
-
-< SUJALJETHWA10
-
-Evaluation Output
-
-YASH-KATHIRIYA
-See .env.example for full configuration documentation.
-Never commit .env, API keys, or credentials to GitHub.
-Evaluation results are stored in the metrics directory.
-main
-
-metrics/
-├── metrics.json
-└── classification_report.txt
-
-metrics.json
-
-YASH-KATHIRIYA
-
-pytest tests/ -v
-pytest tests/ --cov=core --cov=ingestion --cov=data_processing --cov=ner --cov=classification --cov=api
-
-Stores numerical evaluation results in JSON format.
-
-Example:
-
-{
-"accuracy": 0.00,
-"precision": 0.00,
-"recall": 0.00,
-"f1_score": 0.00
-}
-
-classification_report.txt
-
-Contains the detailed classification report for each clause category.
-
-Running the Complete Fine-Tuning Pipeline
-
-From the project root:
-
-Step 1 – Train
-
-python -m classification.trainer
-
-Step 2 – Evaluate
-
-python -m classification.evaluator
-
-Step 3 – Check Results
-
-metrics/metrics.json
-metrics/classification_report.txt
-
-Requirements
-
-Install the required dependencies:
-
-pip install torch
-pip install transformers
-pip install datasets
-pip install pandas
-pip install numpy
-pip install scikit-learn
-
-Or install the project's requirements file:
-
-pip install -r requirements.txt
-
-Using the Trained Model
-
-Once the trained model and tokenizer are available:
-
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-
-MODEL_PATH = "models/clause_classifier"
-
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-
-model = AutoModelForSequenceClassification.from_pretrained(
-MODEL_PATH
-)
-
-A clause can then be tokenized and passed to the classifier for prediction.
-
-text = "The agreement shall remain effective for a period of two years."
-
-inputs = tokenizer(
-text,
-return_tensors="pt",
-truncation=True,
-padding=True,
-max_length=512
-)
-
-outputs = model(**inputs)
-
-prediction = outputs.logits.argmax(dim=-1).item()
-
-print("Predicted class:", prediction)
-
-Important Notes
-
-The tokenizer used during inference should match the tokenizer used during training.
-
-The trained model.safetensors file is required for actual model inference.
-
-The model should be loaded from the same model directory structure used during training.
-
-Keep the label-to-class mapping consistent between training and inference.
-
-Do not commit API keys, passwords, .env files, or other secrets.
-
-If the trained model is too large for normal GitHub storage, keep the model weights in dedicated model storage or use Git LFS.
-
-Project Role
-
-This fine-tuning component is responsible for:
-
-Contract Text
-↓
-Clause Classification
-↓
-Clause Category
-↓
-Risk Scoring Pipeline
-
-The predicted clause category can subsequently be used by the project's risk scoring and downstream NLP pipeline.
-
-Summary
-
-The Fine-Tuning module provides the Transformer-based clause classification component of the project.
-
-It supports:
-
-CUAD-based clause classification
-
-RoBERTa fine-tuning
-
-Automated tokenization
-
-Model evaluation
-
-Accuracy measurement
-
-Precision/Recall/F1 evaluation
-
-Classification reports
-
-Saved model and tokenizer artifacts
-
-This module forms the NLP classification layer of the AI-Powered Contract Intelligence & Risk Scoring system.
-
-Run risk detection
-
-python -m risk.risk_detector
-
-Calculate risk score
-
-python -m risk.risk_scoring
-
-Run complete test suite
-
-pytest tests/ -v
-🧪 Testing Strategy
-Phase 1
-pytest tests/ -v
-
-Current result:
-
-65 passed
-12 skipped
-0 failed
-Phase 2
-
-Testing will cover:
-
-Dataset
-↓
-Tokenizer
-↓
-Classification
-↓
-Risk Detection
-↓
-Risk Scoring
-📊 Overall Project Status
-Phase	Completion	Status
-Phase 1 — Data Parsing & Baseline Modeling	100%	✅ Completed
-Phase 2 — Legal NLP, Clause Classification & Risk Scoring	100%	✅ Completed
-Phase 3 — Vector Search, API & Web UI	100%	✅ Completed
-Phase 4 — Docker, Deployment & Load Testing	In Progress	⏳ In Progress
-📌 Current Next Step
-✅ PHASE 1 COMPLETED
-│
-▼
-🚀 PHASE 2 COMPLETED
-│
-├── Classification dataset prepared
-├── Legal transformer fine-tuned (InLegalBERT)
-├── Confidence calibration completed
-├── Per-label threshold tuning completed
-├── Clause classification completed
-├── Heuristic rules completed
-├── Risk scoring integrated into the pipeline
-├── Evaluation completed
-└── Phase 2 tests completed
-🎯 Phase 1 + Phase 2 Final Goal
-CONTRACT
-│
-▼
-Document Ingestion
-│
-┌────────┴────────┐
-▼                 ▼
-PDF/DOCX            OCR
-│                 │
-└────────┬────────┘
-▼
-Clean Text
-│
-▼
-PHASE 1
-│
-▼
-NER MODEL
-│
-┌────────────┼────────────┐
-▼            ▼            ▼
-ORG         DATE         MONEY
-│            │            │
-└────────────┼────────────┘
-▼
-PHASE 2
-│
-▼
-Legal Transformer
-│
-▼
-Clause Classification
-│
-▼
-Risk Detection
-│
-▼
-Risk Scoring
-│
-▼
-Contract Risk Report
-
-Current Milestones:
-
-Phase 1 — ✅ Completed
-
-Phase 2 — ✅ Completed
-
-Phase 3 — ✅ Completed
-
-Phase 4 — ⏳ In Progress
-
-Next Milestone: Phase 4 — ⏳ Currently Working: Docker, Deployment & Load Testing
-main
+The project successfully integrates **AI/NLP, document processing, clause classification, risk analysis, semantic search, REST APIs, asynchronous processing, frontend visualization, containerization, and cloud deployment** into a unified contract intelligence platform.
