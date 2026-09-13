@@ -299,13 +299,14 @@ function getContractName(contract) {
     return contract.filename || contract.file_name || contract.name || contract.title || `Contract ${getContractId(contract)}`; 
 } 
  
+
 function formatDateTime(value) {
     if (value === null || value === undefined || value === "") return "N/A";
 
     let date;
 
     if (typeof value === "number" || /^\d+(\.\d+)?$/.test(String(value).trim())) {
-        const numericValue = Number(value);
+        const numericValue = Number(value)
         date = new Date(
             numericValue < 100000000000
                 ? numericValue * 1000
@@ -334,6 +335,13 @@ function formatDateTime(value) {
         hour12: true
     });
 }
+
+function formatDateTime(value) { 
+    if (value === null || value === undefined || value === "") return "N/A"; 
+    const date = new Date(value); 
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }); 
+} 
+
  
 function getUploadedTime(data) { 
     return data?.uploaded_at ?? data?.created_at ?? data?.upload_time ?? data?.uploaded_time ?? data?.timestamp ?? data?.created ?? null; 

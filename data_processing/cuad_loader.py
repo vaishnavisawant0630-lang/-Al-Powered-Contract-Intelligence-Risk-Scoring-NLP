@@ -1,32 +1,18 @@
 """
 data_processing/cuad_loader.py
-================================
-CUAD dataset loader — single point of contact for loading the dataset.
 
-Supports two modes:
-  1. Local CUADv1.json  (primary — we already have this in data/raw/)
-  2. HuggingFace Hub   (fallback: load_dataset("theatticusproject/cuad-qa"))
+CUAD dataset loader.
 
-Returns plain Python dicts with a normalised schema — no dependency
-on the `datasets` library anywhere else in the codebase.
+Primary source:
+    data/raw/cuad_v1.json
 
-NORMALISED SCHEMA (one dict per QA pair)
------------------------------------------
-{
-  "id":            str,   # unique QA pair identifier
-  "title":         str,   # contract filename (source)
-  "context":       str,   # full contract text
-  "question":      str,   # clause-type question template
-  "answers":       dict,  # {"text": [str], "answer_start": [int]}
-                          # empty lists → clause absent in this contract
-}
+Also checks:
+    data/raw/CUADv1.json
+    data/raw/DATA RAW/data/CUADv1.json
 
-TRAIN / DEV SPLIT
-------------------
-Document-level split (no contract straddles train and dev):
-  - train_split = 0.85  (default) → ~18,982 rows
-  - dev_split   = 0.15  (default) → ~3,350 rows
-  - random_state = 42
+Returns normalized Python dictionaries.
+
+No Hugging Face datasets dependency is required.
 """
 
 from __future__ import annotations
@@ -38,236 +24,472 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# Default paths
-_DEFAULT_CUAD_JSON = (
-    Path(__file__).parent.parent
-    / "data" / "raw" / "DATA RAW" / "data" / "CUADv1.json"
-)
+# ============================================================
+# PROJECT PATHS
+# ============================================================
 
-# Split config
-TRAIN_RATIO   = 0.85
-RANDOM_SEED   = 42
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+DATA_RAW_DIR = PROJECT_ROOT / "data" / "raw"
+
+# Possible CUAD locations
+POSSIBLE_CUAD_PATHS = [
+    DATA_RAW_DIR / "cuad_v1.json",
+    DATA_RAW_DIR / "CUADv1.json",
+    DATA_RAW_DIR / "DATA RAW" / "data" / "CUADv1.json",
+]
+
+TRAIN_RATIO = 0.85
+RANDOM_SEED = 42
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Module-level convenience
-# ─────────────────────────────────────────────────────────────────────────────
+# ============================================================
+# CONVENIENCE FUNCTION
+# ============================================================
 
 def load_cuad(
     local_path: str | Path | None = None,
     train_ratio: float = TRAIN_RATIO,
-    random_seed: int   = RANDOM_SEED,
+    random_seed: int = RANDOM_SEED,
 ) -> tuple[list[dict], list[dict]]:
-    """
-    Load CUAD and return (train_samples, dev_samples).
 
-    Each sample is a flat dict:
-        {id, title, context, question, answers}
+    loader = CuadLoader(
+        local_path=local_path,
+        train_ratio=train_ratio,
+        random_seed=random_seed,
+    )
 
-    Parameters
-    ----------
-    local_path : str | Path | None
-        Path to CUADv1.json. If None, uses bundled default path,
-        then falls back to HuggingFace Hub download.
-    train_ratio : float
-        Fraction of DOCUMENTS (not rows) to use for training.
-    random_seed : int
-        Random seed for deterministic split.
-    """
-    loader = CuadLoader(local_path=local_path, train_ratio=train_ratio,
-                        random_seed=random_seed)
     return loader.load()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Main Loader class
-# ─────────────────────────────────────────────────────────────────────────────
+# ============================================================
+# CUAD LOADER
+# ============================================================
 
 class CuadLoader:
-    """
-    Loads and splits the CUAD dataset.
-
-    Usage
-    -----
-        loader = CuadLoader()
-        train_samples, dev_samples = loader.load()
-        print(train_samples[0].keys())
-        # dict_keys(['id', 'title', 'context', 'question', 'answers'])
-    """
 
     def __init__(
         self,
         local_path: str | Path | None = None,
         train_ratio: float = TRAIN_RATIO,
-        random_seed: int   = RANDOM_SEED,
+        random_seed: int = RANDOM_SEED,
     ) -> None:
-        self.local_path  = Path(local_path) if local_path else _DEFAULT_CUAD_JSON
+
         self.train_ratio = train_ratio
         self.random_seed = random_seed
         self._schema_logged = False
 
-    # ── Public API ────────────────────────────────────────────────────────
+        # ----------------------------------------------------
+        # Determine local CUAD path
+        # ----------------------------------------------------
+
+        if local_path:
+            self.local_path = Path(local_path)
+        else:
+            self.local_path = self._find_cuad_file()
+
+    # ========================================================
+    # FIND CUAD FILE
+    # ========================================================
+
+    def _find_cuad_file(self) -> Path:
+
+        logger.info("Searching for local CUADv1.json...")
+
+        for path in POSSIBLE_CUAD_PATHS:
+
+            logger.info("Checking: %s", path)
+
+            if path.exists():
+                logger.info(
+                    "Found CUAD file: %s",
+                    path
+                )
+                return path
+
+        # ----------------------------------------------------
+        # Recursive search as final local fallback
+        # ----------------------------------------------------
+
+        logger.info(
+            "CUAD not found in standard locations. "
+            "Searching data/raw recursively..."
+        )
+
+        if DATA_RAW_DIR.exists():
+
+            for path in DATA_RAW_DIR.rglob("*.json"):
+
+                filename = path.name.lower()
+
+                if filename in {
+                    "cuadv1.json",
+                    "cuad_v1.json",
+                    "cuad.json",
+                }:
+
+                    logger.info(
+                        "Found CUAD file: %s",
+                        path
+                    )
+
+                    return path
+
+        raise FileNotFoundError(
+            "\nCUADv1.json was not found.\n\n"
+            "Please place the CUAD file at:\n\n"
+            f"  {DATA_RAW_DIR / 'cuad_v1.json'}\n\n"
+            "Example project structure:\n\n"
+            "data/\n"
+            "└── raw/\n"
+            "    └── cuad_v1.json\n"
+        )
+
+    # ========================================================
+    # LOAD
+    # ========================================================
 
     def load(self) -> tuple[list[dict], list[dict]]:
-        """
-        Load CUAD and return (train_samples, dev_samples).
 
-        Tries local CUADv1.json first. Falls back to HuggingFace Hub
-        if file not found.
+        logger.info("=" * 60)
+        logger.info("LOADING CUAD DATASET")
+        logger.info("=" * 60)
 
-        Returns
-        -------
-        tuple[list[dict], list[dict]]
-            (train_samples, dev_samples) — each sample is a plain dict
-        """
-        raw_samples = self._load_from_source()
+        raw_samples = self._load_local_json(self.local_path)
 
-        # Filter out samples with empty or very short contexts
-        filtered = [s for s in raw_samples if len(s.get("context", "")) >= 50]
+        # ----------------------------------------------------
+        # Filter short contexts
+        # ----------------------------------------------------
+
+        filtered = [
+            sample
+            for sample in raw_samples
+            if len(sample.get("context", "")) >= 50
+        ]
+
         discarded = len(raw_samples) - len(filtered)
+
         if discarded:
-            logger.warning(f"Discarded {discarded} samples with context < 50 chars")
-
-        logger.info(
-            f"Loaded {len(filtered)} CUAD samples "
-            f"({len(set(s['title'] for s in filtered))} contracts)"
-        )
-
-        train, dev = self._split(filtered)
-        logger.info(f"Split → train={len(train)}  dev={len(dev)}")
-        return train, dev
-
-    def schema_info(self) -> dict:
-        """Return schema metadata for inspection / logging."""
-        train, dev = self.load()
-        sample = train[0] if train else {}
-        return {
-            "features": list(sample.keys()),
-            "num_rows":  {"train": len(train), "dev": len(dev)},
-            "total_contracts": len(set(s["title"] for s in train + dev)),
-        }
-
-    # ── Loading strategy ──────────────────────────────────────────────────
-
-    def _load_from_source(self) -> list[dict]:
-        """Load from local JSON first, then HuggingFace Hub."""
-        if self.local_path.exists():
-            logger.info(f"Loading CUAD from local file: {self.local_path}")
-            return self._load_local_json(self.local_path)
-        else:
-            logger.info("Local CUADv1.json not found — downloading from HuggingFace Hub")
-            return self._load_from_huggingface()
-
-    def _load_local_json(self, path: Path) -> list[dict]:
-        """
-        Load from CUADv1.json (SQuAD-style format).
-
-        CUADv1.json structure:
-            {"data": [{"title": str, "paragraphs": [{"context": str, "qas": [...]}]}]}
-
-        Each QA pair becomes one sample row.
-        """
-        with open(path, "r", encoding="utf-8") as f:
-            raw = json.load(f)
-
-        samples: list[dict] = []
-        for entry in raw["data"]:
-            title = entry.get("title", "unknown")
-            for para in entry.get("paragraphs", []):
-                context = para.get("context", "")
-                for qa in para.get("qas", []):
-                    samples.append({
-                        "id":       qa.get("id", ""),
-                        "title":    title,
-                        "context":  context,
-                        "question": qa.get("question", ""),
-                        "answers":  {
-                            "text":         [a["text"]         for a in qa.get("answers", [])],
-                            "answer_start": [a["answer_start"] for a in qa.get("answers", [])],
-                        },
-                    })
-
-        self._log_schema_info(samples)
-        return samples
-
-    def _load_from_huggingface(self) -> list[dict]:
-        """
-        Download CUAD from HuggingFace Hub.
-        Identifier: "theatticusproject/cuad-qa"
-        """
-        try:
-            from datasets import load_dataset  # type: ignore
-        except ImportError:
-            raise ImportError(
-                "The `datasets` library is required to download CUAD from HuggingFace.\n"
-                "Install with: pip install datasets\n"
-                f"Or place CUADv1.json at: {_DEFAULT_CUAD_JSON}"
+            logger.warning(
+                "Discarded %d samples with context < 50 characters",
+                discarded,
             )
 
-        logger.info("Downloading CUAD from HuggingFace Hub (theatticusproject/cuad-qa)...")
-        dataset = load_dataset("theatticusproject/cuad-qa", trust_remote_code=True)
-        train_split = dataset["train"]
-
-        # Convert to normalised dicts
-        samples: list[dict] = []
-        for row in train_split:
-            samples.append({
-                "id":       row.get("id", ""),
-                "title":    row.get("title", ""),
-                "context":  row.get("context", ""),
-                "question": row.get("question", ""),
-                "answers":  row.get("answers", {"text": [], "answer_start": []}),
-            })
-
-        self._log_schema_info(samples)
-        return samples
-
-    # ── Splitting ─────────────────────────────────────────────────────────
-
-    def _split(
-        self, samples: list[dict]
-    ) -> tuple[list[dict], list[dict]]:
-        """
-        Deterministic document-level split.
-
-        Stratifies by contract title to guarantee no contract appears
-        in both train and dev (prevents data leakage).
-
-        Algorithm:
-        1. Collect unique titles
-        2. Shuffle with fixed seed
-        3. First train_ratio → train_titles, rest → dev_titles
-        4. Partition samples by title
-        """
-        titles = sorted(set(s["title"] for s in samples))
-
-        rng = random.Random(self.random_seed)
-        rng.shuffle(titles)
-
-        n_train = max(1, int(len(titles) * self.train_ratio))
-        train_titles = set(titles[:n_train])
-        dev_titles   = set(titles[n_train:])
-
-        train = [s for s in samples if s["title"] in train_titles]
-        dev   = [s for s in samples if s["title"] in dev_titles]
+        if not filtered:
+            raise ValueError(
+                "No valid CUAD samples were found."
+            )
 
         logger.info(
-            f"Document split — "
-            f"train_docs={len(train_titles)}  dev_docs={len(dev_titles)}  "
-            f"train_rows={len(train)}  dev_rows={len(dev)}"
+            "Loaded %d CUAD samples",
+            len(filtered)
         )
+
+        logger.info(
+            "Contracts: %d",
+            len(set(sample["title"] for sample in filtered))
+        )
+
+        # ----------------------------------------------------
+        # Train/dev split
+        # ----------------------------------------------------
+
+        train, dev = self._split(filtered)
+
+        logger.info(
+            "Split complete: train=%d dev=%d",
+            len(train),
+            len(dev)
+        )
+
         return train, dev
 
-    # ── Internal helpers ──────────────────────────────────────────────────
+    # ========================================================
+    # LOAD LOCAL JSON
+    # ========================================================
 
-    def _log_schema_info(self, samples: list[dict]) -> None:
+    def _load_local_json(self, path: Path) -> list[dict]:
+
+        if not path.exists():
+
+            raise FileNotFoundError(
+                f"CUAD file does not exist:\n{path}"
+            )
+
+        logger.info(
+            "Loading CUAD from local file:\n%s",
+            path
+        )
+
+        try:
+
+            with open(
+                path,
+                "r",
+                encoding="utf-8"
+            ) as file:
+
+                raw = json.load(file)
+
+        except json.JSONDecodeError as exc:
+
+            raise ValueError(
+                f"Invalid JSON file:\n{path}\n\n"
+                f"JSON error: {exc}"
+            ) from exc
+
+        # ----------------------------------------------------
+        # Validate CUAD structure
+        # ----------------------------------------------------
+
+        if "data" not in raw:
+
+            raise ValueError(
+                "Invalid CUADv1.json format.\n"
+                "Expected a top-level 'data' field."
+            )
+
+        samples: list[dict] = []
+
+        # ----------------------------------------------------
+        # SQuAD-style CUAD format
+        # ----------------------------------------------------
+
+        for entry in raw["data"]:
+
+            title = entry.get(
+                "title",
+                "unknown"
+            )
+
+            paragraphs = entry.get(
+                "paragraphs",
+                []
+            )
+
+            for paragraph in paragraphs:
+
+                context = paragraph.get(
+                    "context",
+                    ""
+                )
+
+                qas = paragraph.get(
+                    "qas",
+                    []
+                )
+
+                for qa in qas:
+
+                    answers = qa.get(
+                        "answers",
+                        []
+                    )
+
+                    answer_texts = []
+                    answer_starts = []
+
+                    for answer in answers:
+
+                        text = answer.get(
+                            "text",
+                            ""
+                        )
+
+                        start = answer.get(
+                            "answer_start",
+                            0
+                        )
+
+                        if text:
+
+                            answer_texts.append(text)
+                            answer_starts.append(start)
+
+                    sample = {
+                        "id": str(
+                            qa.get(
+                                "id",
+                                ""
+                            )
+                        ),
+
+                        "title": str(title),
+
+                        "context": str(context),
+
+                        "question": str(
+                            qa.get(
+                                "question",
+                                ""
+                            )
+                        ),
+
+                        "answers": {
+                            "text": answer_texts,
+                            "answer_start": answer_starts,
+                        },
+                    }
+
+                    samples.append(sample)
+
+        if not samples:
+
+            raise ValueError(
+                "CUAD JSON was loaded successfully, "
+                "but it contains zero QA samples."
+            )
+
+        self._log_schema_info(samples)
+
+        return samples
+
+    # ========================================================
+    # TRAIN / DEV SPLIT
+    # ========================================================
+
+    def _split(
+        self,
+        samples: list[dict],
+    ) -> tuple[list[dict], list[dict]]:
+
+        titles = sorted(
+            set(
+                sample["title"]
+                for sample in samples
+            )
+        )
+
+        if len(titles) < 2:
+
+            raise ValueError(
+                "CUAD must contain at least 2 contracts "
+                "to create train/dev splits."
+            )
+
+        rng = random.Random(
+            self.random_seed
+        )
+
+        rng.shuffle(titles)
+
+        n_train = max(
+            1,
+            int(
+                len(titles)
+                * self.train_ratio
+            )
+        )
+
+        # Make sure dev has at least one contract
+        if n_train >= len(titles):
+
+            n_train = len(titles) - 1
+
+        train_titles = set(
+            titles[:n_train]
+        )
+
+        dev_titles = set(
+            titles[n_train:]
+        )
+
+        train = [
+            sample
+            for sample in samples
+            if sample["title"] in train_titles
+        ]
+
+        dev = [
+            sample
+            for sample in samples
+            if sample["title"] in dev_titles
+        ]
+
+        logger.info(
+            "Document-level split:"
+        )
+
+        logger.info(
+            "  Train contracts: %d",
+            len(train_titles)
+        )
+
+        logger.info(
+            "  Dev contracts: %d",
+            len(dev_titles)
+        )
+
+        logger.info(
+            "  Train samples: %d",
+            len(train)
+        )
+
+        logger.info(
+            "  Dev samples: %d",
+            len(dev)
+        )
+
+        return train, dev
+
+    # ========================================================
+    # SCHEMA INFORMATION
+    # ========================================================
+
+    def _log_schema_info(
+        self,
+        samples: list[dict],
+    ) -> None:
+
         if self._schema_logged or not samples:
             return
+
         sample = samples[0]
+
         logger.info(
-            "CUAD schema: features=%s  total_rows=%d  contracts=%d",
-            list(sample.keys()),
-            len(samples),
-            len(set(s["title"] for s in samples)),
+            "CUAD schema: %s",
+            list(sample.keys())
         )
+
+        logger.info(
+            "Total QA rows: %d",
+            len(samples)
+        )
+
+        logger.info(
+            "Total contracts: %d",
+            len(
+                set(
+                    sample["title"]
+                    for sample in samples
+                )
+            )
+        )
+
         self._schema_logged = True
+
+    # ========================================================
+    # SCHEMA INFO PUBLIC METHOD
+    # ========================================================
+
+    def schema_info(self) -> dict:
+
+        train, dev = self.load()
+
+        sample = train[0] if train else {}
+
+        return {
+            "features": list(sample.keys()),
+
+            "num_rows": {
+                "train": len(train),
+                "dev": len(dev),
+            },
+
+            "total_contracts": len(
+                set(
+                    sample["title"]
+                    for sample in train + dev
+                )
+            ),
+        }
