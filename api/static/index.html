@@ -299,11 +299,49 @@ function getContractName(contract) {
     return contract.filename || contract.file_name || contract.name || contract.title || `Contract ${getContractId(contract)}`; 
 } 
  
+
+function formatDateTime(value) {
+    if (value === null || value === undefined || value === "") return "N/A";
+
+    let date;
+
+    if (typeof value === "number" || /^\d+(\.\d+)?$/.test(String(value).trim())) {
+        const numericValue = Number(value)
+        date = new Date(
+            numericValue < 100000000000
+                ? numericValue * 1000
+                : numericValue
+        );
+    } else {
+        let rawValue = String(value).trim();
+
+        // API timestamps without timezone are treated as UTC.
+        if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2}(?:\.\d+)?)?$/.test(rawValue)) {
+            rawValue = rawValue.replace(" ", "T") + "Z";
+        }
+
+        date = new Date(rawValue);
+    }
+
+    if (Number.isNaN(date.getTime())) return String(value);
+
+    return date.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+    });
+}
+
 function formatDateTime(value) { 
     if (value === null || value === undefined || value === "") return "N/A"; 
     const date = new Date(value); 
     return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }); 
 } 
+
  
 function getUploadedTime(data) { 
     return data?.uploaded_at ?? data?.created_at ?? data?.upload_time ?? data?.uploaded_time ?? data?.timestamp ?? data?.created ?? null; 
